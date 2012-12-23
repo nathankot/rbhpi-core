@@ -1,4 +1,7 @@
 <?php
+/**
+ * @version 0.1.0
+ */
 
 namespace Core\Prototype;
 
@@ -6,18 +9,45 @@ namespace Core\Prototype;
  * The Request object is responsible for taking a variety of paths and breaking them down.
  */
 class Request extends \Core\Blueprint\Object implements
-	\Core\Wireframe\Merchant\Request
+	\Core\Wireframe\Prototype\Request
 {
-	private static $config = [
+	/**
+	 * Class-wide configuration.
+	 * @var array
+	 */
+	protected static $config = [
 			'available_formats' => array('html', 'json')
 		,	'default_format' => 'html'
 	];
 
+	/**
+	 * URI Path of the route
+	 * @var string
+	 */
 	private $path;
+
+	/**
+	 * Format of the route, defaults to `static::$config['default_format']`.
+	 * @var string
+	 */
 	private $format;
+
+	/**
+	 * An array of route components, excluding the format.
+	 * @var array
+	 */
 	private $components;
 
-	private function init()
+	/**
+	 * Parse the given arguemnts. This class can accept:
+	 *
+	 * - An array
+	 * - A list of arguments
+	 * - A route URI string
+	 *
+	 * @return void
+	 */
+	protected function init()
 	{
 		$args = func_get_args();
 		if (count($args) === 1) {
@@ -27,21 +57,26 @@ class Request extends \Core\Blueprint\Object implements
 			$args = implode('/', $args);
 		}
 		$this->path = '/' . trim($args, '/');
+		$this->path = str_replace('/.', '.', $this->path);
 		$this->breakItDown();
 	}
 
+	/**
+	 * Break the path down into an array of components, and the format.
+	 * @return void
+	 */
 	private function breakItDown()
 	{
 		$components = explode('/', trim($this->path, '/'));
-		$last = array_slice($components, -1, 1);
-		if (strpos($last, '.') === 0) {
-			if (in_array(substr($last, 1), self::$config['available_formats'])) {
-				array_pop($components);
-				$this->format = substr($last, 1);
-			}
+		$last = array_pop($components);
+		$last = explode('.', $last);
+		$format = end($last);
+		if (in_array($format, self::$config['available_formats'])) {
+			$this->format = array_pop($last);
 		}
+		$components = array_merge($components, array_filter($last));
 		$this->components = $components;
-		if (!$this->format) {
+		if (empty($this->format)) {
 			$this->format = self::$config['default_format'];
 		}
 	}

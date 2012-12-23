@@ -22,6 +22,16 @@ abstract class Object
 	final public static function config(array $config)
 	{
 		static::$config = array_merge_recursive(static::$config, $config);
+		return static::$config;
+	}
+
+	/**
+	 * Retrieve the current configuration.
+	 * @return array Current Configuration.
+	 */
+	final public static function getConfig()
+	{
+		return static::$config;
 	}
 
 	/**
