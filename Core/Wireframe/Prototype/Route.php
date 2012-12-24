@@ -12,7 +12,7 @@ use Core\Prototype\Request;
  */
 interface Route
 {
-	public static function connect($route, $handle);
+	public static function connect($route, $handle = false);
 	public function init(Request $request);
 	public function getController();
 	public function getMethod();

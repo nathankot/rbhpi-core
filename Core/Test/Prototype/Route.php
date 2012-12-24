@@ -19,16 +19,27 @@ class Route extends \Core\Test\Base
 
 	public function testParse()
 	{
+		Subject::connect('{controller}/{method:@[A-e]@}/{*args:integer}');
+
+		Subject::connect('{one}/{two}/{three:email}', function($captured) {
+			$result = [
+					'controller' => $captured['two']
+				,	'method' => $captured['one']
+				,	'args' => [$captured['three']]
+			];
+		});
+
 		Subject::connect('{controller}/{method}/{*args}', function($captured) {
 			$result = [
 					'controller' => $captured['controller']
 				,	'method' => $captured['method']
 				,	'args' => $captured['args']
 			];
+			return $result;
 		});
 
 		////
-		$this->message('Testing Route parser');
+		$this->message('Testing Route parser: Basic Route');
 
 		$request= new Request('One/Two/Three.json');
 		$route = new Subject($request);
@@ -37,6 +48,28 @@ class Route extends \Core\Test\Base
 		assert($route->getMethod() === 'Two');
 		assert($route->getArgs() === ['Three']);
 		assert($route->getFormat() === 'json');
+
+		////
+		$this->message('Testing Route parser: Regex filter, and Splat Integer Filter');
+
+		$request = new Request('controller', 'abCde', '1234', '5678', '910');
+		$route = new Subject($request);
+
+		assert($route->getController() === 'controller');
+		assert($route->getMethod() === 'abCde');
+		assert($route->getArgs() === ['1234', '5678', '910']);
+		assert($route->getFormat() === 'html');
+
+		////
+		$this->message('Testing Route parser: Complex route with email filter');
+
+		$request = new Request('one/two/nk@nathankot.com');
+		$route = new Subject($request);
+
+		assert($route->getController() === 'two');
+		assert($route->getMethod() === 'one');
+		assert($route->getArgs() === ['nk@nathankot.com']);
+		assert($route->getFormat() === 'html');
 	}
 
 }

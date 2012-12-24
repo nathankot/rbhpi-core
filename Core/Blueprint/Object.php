@@ -35,6 +35,17 @@ abstract class Object
 	}
 
 	/**
+	 * Apply a filter to a given method of the Object.
+	 * @param  string $method_name  Method name.
+	 * @param  callable $handle     Callable handle, takes `$chain`, and `$self`.
+	 * @return boolean              Whether the filter was successfully applied.
+	 */
+	final public static function filter($method_name, $handle)
+	{
+
+	}
+
+	/**
 	 * Constructor called after `__construct()`. This will prevent user-defined constructors from overriding
 	 * default system constructors.
 	 */
