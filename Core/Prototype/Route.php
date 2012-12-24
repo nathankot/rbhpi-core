@@ -132,7 +132,7 @@ class Route extends \Core\Blueprint\Object implements
 	const MATCH_WRAPPER = '@^%s(?:\.[a-z]*)$@';
 	const MATCH_COMPONENT = '(%s)/?';
 	const SPLAT_MATCH_COMPONENT = '(%s/?)*';
-	const DEFAULT_MATCH = '[\w\.\_\-]*';
+	const DEFAULT_MATCH = '[\d\w\.\_\-\%]*';
 
 	/**
 	 * Create a regex match for a given route.
