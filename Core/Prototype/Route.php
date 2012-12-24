@@ -95,6 +95,8 @@ class Route extends \Core\Blueprint\Object implements
 
 	const MATCH_WRAPPER = '@^%s(?:\.[a-z]*)$@';
 	const MATCH_COMPONENT = '(%s)/?';
+	const SPLAT_MATCH_COMPONENT = '(%s/?)*';
+	const DEFAULT_MATCH = '[\w\.\_\-]*';
 
 	/**
 	 * Create a regex match for a given route.
@@ -103,7 +105,29 @@ class Route extends \Core\Blueprint\Object implements
 	 */
 	private function generateMatch($route)
 	{
-
+		$match_components = '';
+		$components = explode('/', trim($route, '/'));
+		foreach ($components as $component) {
+			$component_parts = explode(':', $component);
+			if (count($component_parts === 2)) {
+				$filter_class = self::$config['filter'];
+				if (method_exists($filter_class, $component_parts[1])) {
+					$component = $filter_class::$component_parts[1]();
+				} else {
+					$component = DEFAULT_MATCH;
+				}
+			} else {
+				$component = DEFAULT_MATCH;
+			}
+			if (strpos($component_parts[0], '*') === 0) {
+				$component = sprintf(SPLAT_MATCH, $component);
+			} else {
+				$component = sprintf(MATCH_COMPONENT, $component);
+			}
+			$match_components .= $component;
+		}
+		$regex = sprintf(MATCH_WRAPPER, $match_components);
+		return $regex;
 	}
 
 	public function getController()
