@@ -49,7 +49,7 @@ abstract class Object
 	 * Constructor called after `__construct()`. This will prevent user-defined constructors from overriding
 	 * default system constructors.
 	 */
-	protected function init() {}
+	// public function init() {}
 
 	/**
 	 * Call the user-constructor

@@ -8,15 +8,6 @@ use Core\Prototype\Request;
 class Route extends \Core\Test\Base
 {
 
-	public function testCreation()
-	{
-		////
-		$this->message('Testing Route creation.');
-
-		$request = new Request('One/Two/Three.json');
-		$route = new Subject($request);
-	}
-
 	public function testParse()
 	{
 		Subject::connect('{controller}/{method:@[A-e]@}/{*args:integer}');

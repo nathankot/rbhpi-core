@@ -12,7 +12,7 @@ use Core\Prototype\Request;
  * interpretable components that can be used to create a response.
  */
 class Route extends \Core\Blueprint\Object implements
-	\Core\Wireframe\Route
+	\Core\Wireframe\Prototype\Route
 {
 	/**
 	 * Class-wide configuration
@@ -21,6 +21,7 @@ class Route extends \Core\Blueprint\Object implements
 	protected static $config = [
 			'routes' => []
 		,	'filter' => 'Core\Merchant\Filter'
+		,	'default_handle' => false
 	];
 
 	/**
@@ -61,13 +62,25 @@ class Route extends \Core\Blueprint\Object implements
 	 */
 	public static function connect($route, $handle = false)
 	{
+		# Set the default handle if it doesn't exist
+		self::$config['default_handle'] = self::$config['default_handle'] ?: function($captured) {
+			return [
+					'controller' => $captured['controller']
+				,	'method' => $captured['method']
+				,	'args' => $captured['args']
+			];
+		};
+		## End, start your average method logic: ##
 		if (!is_string($route)) {
 			trigger_error('Core\Prototype\Route::connect($route, $handle) must take a string as $route.', E_USER_ERROR);
 		}
 		if ($handle && !is_callable($handle)) {
 			trigger_error('Core\Prototype\Route::connect($route, $handle) must take a callable as $handle.', E_USER_ERROR);
 		}
-		$match = $this->generateMatch($route);
+		if (!$handle) {
+			$handle = self::$config['default_handle'];
+		}
+		$match = self::generateMatch($route);
 		self::$config['routes'][] = [
 				'route' => $route
 			,	'handle' => $handle
@@ -87,10 +100,33 @@ class Route extends \Core\Blueprint\Object implements
 		$this->breakItDown();
 	}
 
+	const MATCH_NAMES = '@{(\w*):?\w*?}@';
+
 	private function breakItDown()
 	{
 		$components = $this->request->getComponents();
 		$path = $this->request->getPath();
+		foreach (self::$config['routes'] as $route) {
+			if (preg_match($route['match'], $path, $captured) !== 1) {
+				continue;
+			}
+			array_shift($captured);
+			preg_match_all(self::MATCH_NAMES, $route['route'], $matches, $names);
+			if (count($captured) > count($names)) {
+				$last = array_slice($captured, count($names) - 1, count($captured) - count($names));
+				$captured = array_slice($captured, 0, count($names) - 1);
+				$captured[] = $last;
+			}
+			$captured = array_combine($names, $captured);
+			break;
+		}
+		if (empty($captured)) {
+			throw new \Exception\BadRequest("Could not find a matching route for `{$path}`");
+		}
+		$result = $route['handle']($captured);
+		$this->controller = $result['controller'];
+		$this->method = $result['method'];
+		$this->args = $result['args'];
 	}
 
 	const MATCH_WRAPPER = '@^%s(?:\.[a-z]*)$@';
@@ -103,30 +139,30 @@ class Route extends \Core\Blueprint\Object implements
 	 * @param  string $route Route
 	 * @return string        Regex which matches the route
 	 */
-	private function generateMatch($route)
+	public static function generateMatch($route)
 	{
 		$match_components = '';
 		$components = explode('/', trim($route, '/'));
 		foreach ($components as $component) {
 			$component_parts = explode(':', $component);
-			if (count($component_parts === 2)) {
+			if (count($component_parts) === 2) {
 				$filter_class = self::$config['filter'];
-				if (method_exists($filter_class, $component_parts[1])) {
+				if (class_exists($filter_class, false) && method_exists($filter_class, $component_parts[1])) {
 					$component = $filter_class::$component_parts[1]();
 				} else {
-					$component = DEFAULT_MATCH;
+					$component = self::DEFAULT_MATCH;
 				}
 			} else {
-				$component = DEFAULT_MATCH;
+				$component = self::DEFAULT_MATCH;
 			}
 			if (strpos($component_parts[0], '*') === 0) {
-				$component = sprintf(SPLAT_MATCH, $component);
+				$component = sprintf(self::SPLAT_MATCH, $component);
 			} else {
-				$component = sprintf(MATCH_COMPONENT, $component);
+				$component = sprintf(self::MATCH_COMPONENT, $component);
 			}
 			$match_components .= $component;
 		}
-		$regex = sprintf(MATCH_WRAPPER, $match_components);
+		$regex = sprintf(self::MATCH_WRAPPER, $match_components);
 		return $regex;
 	}
 
