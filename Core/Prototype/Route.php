@@ -20,7 +20,7 @@ class Route extends \Core\Blueprint\Object implements
 	 */
 	protected static $config = [
 			'routes' => []
-		,	'filter' => 'Core\Merchant\Filter'
+		,	'filter' => '\Core\Merchant\Filter'
 		,	'default_handle' => false
 		,	'default_method' => 'index'
 	];
@@ -171,11 +171,11 @@ class Route extends \Core\Blueprint\Object implements
 		foreach ($components as $component) {
 			$component_parts = explode(':', trim($component, '{}'));
 			if (count($component_parts) === 2) {
+				$filter_class = self::$config['filter'];
 				$filters = explode('|', $component_parts[1]);
 				foreach ($filters as $filter) {
-					$filter_class = self::$config['filter'];
-					if (class_exists($filter_class, false) && method_exists($filter_class, $filter)) {
-						$component = $filter_class::$filter();
+					if (class_exists($filter_class) && $filter_class::checkExist($filter)) {
+						$component = $filter_class::getRegexp($filter);
 					} else {
 						$component = self::DEFAULT_MATCH;
 					}
