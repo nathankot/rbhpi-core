@@ -65,6 +65,7 @@ class Route extends \Core\Blueprint\Object implements
 	{
 		# Set the default handle if it doesn't exist
 		self::$config['default_handle'] = self::$config['default_handle'] ?: function($captured, $request) {
+			# UNTESTED YET, SUBJECT TO CHANGE
 			$controller_class = "\\App\\Controller\\{$captured['controller']}";
 			$prefixes = [strtolower($request->getMethod()).'_', ''];
 			$prefixes_backup = $prefixes;
@@ -173,11 +174,18 @@ class Route extends \Core\Blueprint\Object implements
 			if (count($component_parts) === 2) {
 				$filter_class = self::$config['filter'];
 				$filters = explode('|', $component_parts[1]);
-				foreach ($filters as $filter) {
-					if (class_exists($filter_class) && $filter_class::checkExist($filter)) {
-						$component = $filter_class::getRegexp($filter);
-					} else {
-						$component = self::DEFAULT_MATCH;
+				if (
+					count($filters) === 1 &&
+					trim($filters[0], '@') !== $filters[0]
+				) {
+					$component = trim($filters[0], '@');
+				} else {
+					foreach ($filters as $filter) {
+						if (class_exists($filter_class) && $filter_class::checkExist($filter)) {
+							$component = $filter_class::getRegexp($filter);
+						} else {
+							$component = self::DEFAULT_MATCH;
+						}
 					}
 				}
 			} else {

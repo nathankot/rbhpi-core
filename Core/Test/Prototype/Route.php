@@ -10,7 +10,7 @@ class Route extends \Core\Test\Base
 
 	public function testParse()
 	{
-		Subject::connect('{controller}/{method:@[A-e]@}/{*args:integer}', function($captured) {
+		Subject::connect('{controller}/{method:@[A-e]*@}/{*args:integer}', function($captured) {
 			return [
 					'controller' => $captured['controller']
 				,	'method' => $captured['method']
@@ -66,6 +66,11 @@ class Route extends \Core\Test\Base
 		assert($route->getMethod() === 'one');
 		assert($route->getArgs() === ['nk@nathankot.com']);
 		assert($route->getFormat() === 'html');
+	}
+
+	public function testDefaultHandler()
+	{
+
 	}
 
 }
