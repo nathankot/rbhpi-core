@@ -22,6 +22,7 @@ class Route extends \Core\Blueprint\Object implements
 			'routes' => []
 		,	'filter' => 'Core\Merchant\Filter'
 		,	'default_handle' => false
+		,	'default_method' => 'index'
 	];
 
 	/**
@@ -63,11 +64,24 @@ class Route extends \Core\Blueprint\Object implements
 	public static function connect($route, $handle = false)
 	{
 		# Set the default handle if it doesn't exist
-		self::$config['default_handle'] = self::$config['default_handle'] ?: function($captured) {
+		self::$config['default_handle'] = self::$config['default_handle'] ?: function($captured, $request) {
+			$controller_class = "\\App\\Controller\\{$captured['controller']}";
+			$prefixes = [strtolower($request->getMethod()).'_', ''];
+			$prefixes_backup = $prefixes;
+			$checked_index = false;
+			do {
+				$method = array_shift($prefixes) . $captured['method'];
+				if (empty($prefixes) && !$checked_index) {
+					array_unshift($captured['args'], $captured['method']);
+					$captured['method'] = self::$config['default_method'];
+					$prefixes = $prefixes_backup;
+					$checked_index = true;
+				}
+			} while (!method_exists($controller_class, $method) && !empty($prefixes));
 			return [
-					'controller' => $captured['controller']
-				,	'method' => $captured['method']
-				,	'args' => $captured['args']
+					'controller' => isset($captured['controller']) ? $captured['controller'] : null
+				,	'method' => isset($captured['method']) ? $captured['method'] : null
+				,	'args' => isset($captured['args']) ? $captured['args'] : []
 			];
 		};
 		## End, start your average method logic: ##
@@ -100,39 +114,50 @@ class Route extends \Core\Blueprint\Object implements
 		$this->breakItDown();
 	}
 
-	const MATCH_NAMES = '@{(\w*):?\w*?}@';
+	const MATCH_NAMES = '@{([\*\w]*):?.*?}@';
 
+	/**
+	 * Find the best controller, method, and args using the given request path, and pre-configured routes.
+	 * @return void
+	 */
 	private function breakItDown()
 	{
 		$components = $this->request->getComponents();
 		$path = $this->request->getPath();
 		foreach (self::$config['routes'] as $route) {
+			$captured = [];
+			$names = [];
 			if (preg_match($route['match'], $path, $captured) !== 1) {
 				continue;
 			}
 			array_shift($captured);
-			preg_match_all(self::MATCH_NAMES, $route['route'], $matches, $names);
-			if (count($captured) > count($names)) {
-				$last = array_slice($captured, count($names) - 1, count($captured) - count($names));
-				$captured = array_slice($captured, 0, count($names) - 1);
-				$captured[] = $last;
-			}
+			preg_match_all(self::MATCH_NAMES, $route['route'], $names, PREG_SET_ORDER);
+			$names = array_map(function($value) {
+				return $value[1];
+			}, $names);
 			$captured = array_combine($names, $captured);
+			foreach ($captured as $name => $component) {
+				if (strpos($name, '*') === 0) {
+					$new_name = substr($name, 1);
+					$captured[$new_name] = explode('/', $component);
+					unset($captured[$name]);
+				}
+			}
 			break;
 		}
 		if (empty($captured)) {
 			throw new \Exception\BadRequest("Could not find a matching route for `{$path}`");
 		}
-		$result = $route['handle']($captured);
+		$result = $route['handle']($captured, $this->request);
 		$this->controller = $result['controller'];
 		$this->method = $result['method'];
 		$this->args = $result['args'];
 	}
 
-	const MATCH_WRAPPER = '@^%s(?:\.[a-z]*)$@';
+	const MATCH_WRAPPER = '@^/?%s(?:\.[a-z]*)?$@';
 	const MATCH_COMPONENT = '(%s)/?';
-	const SPLAT_MATCH_COMPONENT = '(%s/?)*';
-	const DEFAULT_MATCH = '[\d\w\.\_\-\%]*';
+	const SPLAT_MATCH_COMPONENT = '((?:%s/?)*?)';
+	const DEFAULT_MATCH = '[\d\w\_\-\%]*';
 
 	/**
 	 * Create a regex match for a given route.
@@ -144,19 +169,22 @@ class Route extends \Core\Blueprint\Object implements
 		$match_components = '';
 		$components = explode('/', trim($route, '/'));
 		foreach ($components as $component) {
-			$component_parts = explode(':', $component);
+			$component_parts = explode(':', trim($component, '{}'));
 			if (count($component_parts) === 2) {
-				$filter_class = self::$config['filter'];
-				if (class_exists($filter_class, false) && method_exists($filter_class, $component_parts[1])) {
-					$component = $filter_class::$component_parts[1]();
-				} else {
-					$component = self::DEFAULT_MATCH;
+				$filters = explode('|', $component_parts[1]);
+				foreach ($filters as $filter) {
+					$filter_class = self::$config['filter'];
+					if (class_exists($filter_class, false) && method_exists($filter_class, $filter)) {
+						$component = $filter_class::$filter();
+					} else {
+						$component = self::DEFAULT_MATCH;
+					}
 				}
 			} else {
 				$component = self::DEFAULT_MATCH;
 			}
 			if (strpos($component_parts[0], '*') === 0) {
-				$component = sprintf(self::SPLAT_MATCH, $component);
+				$component = sprintf(self::SPLAT_MATCH_COMPONENT, $component);
 			} else {
 				$component = sprintf(self::MATCH_COMPONENT, $component);
 			}
@@ -166,21 +194,37 @@ class Route extends \Core\Blueprint\Object implements
 		return $regex;
 	}
 
+	/**
+	 * Getter for the best controller.
+	 * @return string Controller.
+	 */
 	public function getController()
 	{
 		return $this->controller;
 	}
 
+	/**
+	 * Getter for the best method.
+	 * @return string Method.
+	 */
 	public function getMethod()
 	{
 		return $this->method;
 	}
 
+	/**
+	 * Getter for the best arguments.
+	 * @return array Arguments.
+	 */
 	public function getArgs()
 	{
 		return $this->args;
 	}
 
+	/**
+	 * Getter for the best format.
+	 * @return string Format.
+	 */
 	public function getFormat()
 	{
 		return $this->format;

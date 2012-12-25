@@ -18,6 +18,7 @@ class Request extends \Core\Blueprint\Object implements
 	protected static $config = [
 			'available_formats' => array('html', 'json')
 		,	'default_format' => 'html'
+		,	'default_method' => 'GET'
 	];
 
 	/**
@@ -58,7 +59,7 @@ class Request extends \Core\Blueprint\Object implements
 		}
 		$this->path = '/' . trim($args, '/');
 		$this->path = str_replace('/.', '.', $this->path);
-		$this->method = $_SERVER['REQUEST_METHOD'];
+		$this->method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : self::$config['default_method'];
 		$this->breakItDown();
 	}
 

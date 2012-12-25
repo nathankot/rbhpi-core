@@ -10,10 +10,16 @@ class Route extends \Core\Test\Base
 
 	public function testParse()
 	{
-		Subject::connect('{controller}/{method:@[A-e]@}/{*args:integer}');
+		Subject::connect('{controller}/{method:@[A-e]@}/{*args:integer}', function($captured) {
+			return [
+					'controller' => $captured['controller']
+				,	'method' => $captured['method']
+				,	'args' => $captured['args']
+			];
+		});
 
 		Subject::connect('{one}/{two}/{three:email}', function($captured) {
-			$result = [
+			return [
 					'controller' => $captured['two']
 				,	'method' => $captured['one']
 				,	'args' => [$captured['three']]
@@ -21,12 +27,11 @@ class Route extends \Core\Test\Base
 		});
 
 		Subject::connect('{controller}/{method}/{*args}', function($captured) {
-			$result = [
+			return [
 					'controller' => $captured['controller']
 				,	'method' => $captured['method']
 				,	'args' => $captured['args']
 			];
-			return $result;
 		});
 
 		////
