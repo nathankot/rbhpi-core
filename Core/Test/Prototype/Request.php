@@ -19,6 +19,7 @@ class Request extends \Core\Test\Base
 	{
 
 		Subject::config(['available_formats' => ['format']]);
+		$_SERVER['REQUEST_METHOD'] = 'PUT';
 
 		////
 		$this->message('Testing Request with basic URI string');
@@ -47,5 +48,12 @@ class Request extends \Core\Test\Base
 		assert($request->getFormat() === 'format');
 		assert($request->getComponents() === ['one', 'two', 'three']);
 		assert($request->getPath() === $mock_uri);
+
+		////
+		$this->message('Testing server request method');
+
+		$request = new Subject('one', 'two', 'three');
+
+		assert($request->getMethod() === 'PUT');
 	}
 }

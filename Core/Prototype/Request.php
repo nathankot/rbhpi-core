@@ -58,6 +58,7 @@ class Request extends \Core\Blueprint\Object implements
 		}
 		$this->path = '/' . trim($args, '/');
 		$this->path = str_replace('/.', '.', $this->path);
+		$this->method = $_SERVER['REQUEST_METHOD'];
 		$this->breakItDown();
 	}
 
@@ -94,5 +95,10 @@ class Request extends \Core\Blueprint\Object implements
 	public function getPath()
 	{
 		return $this->path;
+	}
+
+	public function getMethod()
+	{
+		return $this->method;
 	}
 }

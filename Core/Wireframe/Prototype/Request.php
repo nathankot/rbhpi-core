@@ -13,4 +13,5 @@ interface Request
 	public function getFormat();
 	public function getComponents();
 	public function getPath();
+	public function getMethod();
 }
