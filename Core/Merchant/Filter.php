@@ -30,9 +30,10 @@ abstract class Filter extends \Core\Blueprint\Object implements
 								}
 						]
 					,	'url' => [
-								'regexp' => '\b(?:(?:http|https)://)?(?:[A-z0-9_-]*?\.){1,}[A-z]{2,7}/?(?:[A-z0-9_-]*/?)*\b'
+								'regexp' => '^(?:(?:http|https)://)?(?:[A-z0-9_-]*?\.){1,}[A-z]{2,7}/?(?:[A-z0-9_-]*/?)*(?:[A-z0-9_-]*\.[A-z]{1,10})?$'
 							,	'handle' => function($value) {
-									return filter_var($value, FILTER_VALIDATE_URL);
+									# The php FILTER_VALIDATE_URL filter is too strict. (OPINION)
+									return (boolean)preg_match("@^".self::getRegexp('url')."$@", $value);
 								}
 						]
 				]
@@ -69,7 +70,7 @@ abstract class Filter extends \Core\Blueprint\Object implements
 	 * @param  array $args Arguments passed to this static method (Should only be one).
 	 * @return boolean       Whether or not the value has passed the filter.
 	 */
-	public static function callStatic($name, $args)
+	public static function __callStatic($name, $args)
 	{
 		if (empty(self::$config)) {
 			self::init();
