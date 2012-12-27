@@ -56,7 +56,9 @@ abstract class Object
 	 */
 	public function __construct()
 	{
-		return call_user_func_array([$this, 'init'], func_get_args());
+		if (method_exists($this, 'init')) {
+			return call_user_func_array([$this, 'init'], func_get_args());
+		}
 	}
 
 }
