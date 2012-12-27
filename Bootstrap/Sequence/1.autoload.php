@@ -7,5 +7,14 @@ spl_autoload_register(function($className) {
 	$className = '\\' . ltrim($className, '\\');
 	$classPath = str_replace(array('\\', '_'), '/', $className);
 	$file = ROOT . '/Vendor' . $classPath . '.php';
-	require_once $file;
+	if (!is_readable($file)) {
+		return false;
+	} else {
+		require_once $file;
+		if (!class_exists($className, false) &&
+				!interface_exists($className, false) &&
+				!trait_exists($className, false)) {
+			throw new \Exception\BadClass("Class `{$className}` does not exist!");
+		}
+	}
 });
