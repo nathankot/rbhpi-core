@@ -36,6 +36,20 @@ abstract class Filter extends \Core\Blueprint\Object implements
 									return (boolean)preg_match("@^".self::getRegexp('url')."$@", $value);
 								}
 						]
+					,	'phone' => [
+								'regexp' => '\D*(?:\d\D*){3,}' # Minimum of 3 digits, see <http://stackoverflow.com/a/1118201/1740868>
+							,	'handle' => function($value) {
+									# Minimum of three digits, over 50% needs to be digits
+									$digit_count = preg_match_all('@\d@', $value);
+									return  $digit_count >= 3 && ($digit_count / strlen($value)) > 0.5;
+								}
+						]
+					,	'required' => [
+								'regexp' => '.{1,}'
+							,	'handle' => function($value) {
+									return isset($value) && $value !== '';
+								}
+						]
 				]
 		]);
 	}
@@ -56,12 +70,28 @@ abstract class Filter extends \Core\Blueprint\Object implements
 		return self::$config['filters'][$name]['regexp'];
 	}
 
+	/**
+	 * Check if the given filter name exists.
+	 * @param  string $name Filter name.
+	 * @return boolean
+	 */
 	public static function checkExist($name)
 	{
 		if (empty(self::$config)) {
 			self::init();
 		}
 		return isset(self::$config['filters'][$name]);
+	}
+
+	public static function addFilter($name, $regexp, Callable $handle)
+	{
+		if (empty(self::$config)) {
+			self::init();
+		}
+		self::$config['filters'][$name] = [
+				'regexp' => $regexp
+			, 'handle' => $handle
+		];
 	}
 
 	/**
