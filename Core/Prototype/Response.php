@@ -70,6 +70,9 @@ class Response extends \Core\Blueprint\Object implements
 			throw new \InvalidArgumentException("Core\\Prototype\\Response::\$config['get_controller_handle'] is empty!");
 		}
 		$controller = call_user_func_array(self::$config['get_controller_handle'], [$this->route->getController()]);
+		if (!method_exists($controller, $this->route->getMethod())) {
+			throw new \BadMethodCallException("The controller `{$this->route->getController()}` does not have method `{$this->route->getMethod()}`");
+		}
 		$result = call_user_func_array([$controller, $this->route->getMethod()], $this->route->getArgs());
 		return $result;
 	}
