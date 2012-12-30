@@ -26,6 +26,16 @@ class Response extends \Core\Test\Base
 		$result = $response->getResult();
 		assert($result === 'test');
 
+		$this->message('Testing Response format');
+
+		$result = $response->getFormat();
+		assert($result === 'html');
+
+		$this->message('Testing Response Status');
+
+		$result = $response->getStatus();
+		assert($result === 200);
+
 	}
 
 }

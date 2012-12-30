@@ -82,6 +82,15 @@ class Response extends \Core\Blueprint\Object implements
 	}
 
 	/**
+	 * Get the Format.
+	 * @return string Format
+	 */
+	public function getFormat()
+	{
+		return $this->format;
+	}
+
+	/**
 	 * Set the HTTP Status Code of the response.
 	 * @param integer $status
 	 */
@@ -91,12 +100,30 @@ class Response extends \Core\Blueprint\Object implements
 	}
 
 	/**
+	 * Get the Status.
+	 * @return string Status
+	 */
+	public function getStatus()
+	{
+		return $this->status;
+	}
+
+	/**
 	 * Add a header to the response. Newer headers will override older ones.
 	 * @param string $header
 	 */
 	public function addHeader($header)
 	{
 		$this->headers[] = $header;
+	}
+
+	/**
+	 * Get the set Headers.
+	 * @return array Set headers.
+	 */
+	public function getHeaders()
+	{
+		return $this->headers;
 	}
 
 	/**
