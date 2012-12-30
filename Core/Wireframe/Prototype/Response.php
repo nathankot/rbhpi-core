@@ -13,6 +13,7 @@ interface Response
 	public function init(\Core\Prototype\Route $route);
 	public function setFormat($format);
 	public function setStatus($status);
+	public function setHeaders($headers);
 	public function addHeader($header);
 	public function getFormat();
 	public function getStatus();

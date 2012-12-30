@@ -127,6 +127,15 @@ class Response extends \Core\Blueprint\Object implements
 	}
 
 	/**
+	 * Replace all the headers.
+	 * @param array $headers New Headers.
+	 */
+	public function setHeaders($headers)
+	{
+		$this->headers = $headers;
+	}
+
+	/**
 	 * Get the result of the Controller action.
 	 * @return mixed
 	 */
