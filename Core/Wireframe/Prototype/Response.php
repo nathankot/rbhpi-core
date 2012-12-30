@@ -19,4 +19,5 @@ interface Response
 	public function getStatus();
 	public function getHeaders();
 	public function getResult();
+	public function getRoute();
 }

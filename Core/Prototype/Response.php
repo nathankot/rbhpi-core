@@ -136,6 +136,15 @@ class Response extends \Core\Blueprint\Object implements
 	}
 
 	/**
+	 * Get the Route that this Response is using.
+	 * @return Core\Prototype\Route
+	 */
+	public function getRoute()
+	{
+		return $this->route;
+	}
+
+	/**
 	 * Get the result of the Controller action.
 	 * @return mixed
 	 */
