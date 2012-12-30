@@ -61,9 +61,7 @@ abstract class Filter extends \Core\Blueprint\Object implements
 	 */
 	public static function getRegexp($name)
 	{
-		if (empty(self::$config)) {
-			self::init();
-		}
+		self::config();
 		if (!isset(self::$config['filters'][$name]['regexp'])) {
 			throw new \Exception\BadFilter("Regexp of Filter {$name} doesn't exist.");
 		}
@@ -77,17 +75,13 @@ abstract class Filter extends \Core\Blueprint\Object implements
 	 */
 	public static function checkExist($name)
 	{
-		if (empty(self::$config)) {
-			self::init();
-		}
+		self::config();
 		return isset(self::$config['filters'][$name]);
 	}
 
 	public static function addFilter($name, $regexp, Callable $handle)
 	{
-		if (empty(self::$config)) {
-			self::init();
-		}
+		self::config();
 		self::$config['filters'][$name] = [
 				'regexp' => $regexp
 			, 'handle' => $handle
@@ -102,9 +96,7 @@ abstract class Filter extends \Core\Blueprint\Object implements
 	 */
 	public static function __callStatic($name, $args)
 	{
-		if (empty(self::$config)) {
-			self::init();
-		}
+		self::config();
 		if (!isset(self::$config['filters'][$name])) {
 			throw new \Exception\BadFilter("Filter {$name} doesn't exist.");
 		}

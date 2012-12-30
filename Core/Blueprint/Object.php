@@ -15,12 +15,28 @@ abstract class Object
 	protected static $config = [];
 
 	/**
+	 * Has the static init method been called?
+	 * @var boolean
+	 */
+	protected static $is_init = false;
+
+	/**
 	 * Class configuration sets can be adjusted by passing additional configuration parameters.
 	 * @param  array  $config New configuration parameters.
 	 * @return void
 	 */
-	final public static function config(array $config)
+	final public static function config($config = [])
 	{
+		if (!static::$is_init) {
+			static::$is_init = true;
+			$class_name = get_called_class();
+			if (method_exists($class_name, 'init')) {
+				$reflection = new \ReflectionMethod($class_name, 'init');
+				if ($reflection->isStatic()) {
+					$reflection->invoke(null);
+				}
+			}
+		}
 		static::$config = array_merge_recursive(static::$config, $config);
 		return static::$config;
 	}

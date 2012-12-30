@@ -7,6 +7,8 @@ use Core\Prototype\Response;
 class View extends \Core\Blueprint\Object implements
 	\Core\Wireframe\Merchant\View
 {
+	public static $config = [];
+
 	public static function init()
 	{
 
@@ -14,6 +16,9 @@ class View extends \Core\Blueprint\Object implements
 
 	public static function renderSilent(Response $response)
 	{
+		if (empty(self::$config)) {
+			self::init();
+		}
 		$format = $response->getFormat();
 		$status = $response->getStatus();
 		$headers = $response->getHeaders();
