@@ -35,7 +35,5 @@ class Response extends \Core\Test\Base
 
 		$result = $response->getStatus();
 		assert($result === 200);
-
 	}
-
 }
