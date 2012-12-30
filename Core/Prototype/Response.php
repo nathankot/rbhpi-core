@@ -1,4 +1,7 @@
 <?php
+/**
+ * @version 0.1.0
+ */
 
 namespace Core\Prototype;
 
@@ -14,16 +17,41 @@ use Core\Prototype\Route;
 class Response extends \Core\Blueprint\Object implements
 	\Core\Wireframe\Prototype\Response
 {
+	/**
+	 * The injected Route.
+	 * @var Core\Prototype\Route
+	 */
 	private $route;
 
+	/**
+	 * The request format ascertained from the Route.
+	 * @var string
+	 */
 	private $format;
 
+	/**
+	 * The response HTTP Status.
+	 * @var integer
+	 */
 	private $status = 200;
 
+	/**
+	 * Response headers that _should_ be passed.
+	 * @var array
+	 */
 	private $headers = [];
 
+	/**
+	 * Result of the Controller action.
+	 * @var mixed
+	 */
 	private $result;
 
+	/**
+	 * Take a `Route` as the dependency. **Runs** the proper controller action and stores the result.
+	 * @param  Route  $route The route Object
+	 * @return void
+	 */
 	public function init(Route $route)
 	{
 		# Default controller getter
@@ -44,26 +72,46 @@ class Response extends \Core\Blueprint\Object implements
 		$this->result = $this->execute();
 	}
 
+	/**
+	 * Set the format of the Response.
+	 * @param string $format i.e 'html', 'json'
+	 */
 	public function setFormat($format)
 	{
 		$this->format = $format;
 	}
 
+	/**
+	 * Set the HTTP Status Code of the response.
+	 * @param integer $status
+	 */
 	public function setStatus($status)
 	{
 		$this->status = $status;
 	}
 
+	/**
+	 * Add a header to the response. Newer headers will override older ones.
+	 * @param string $header
+	 */
 	public function addHeader($header)
 	{
 		$this->headers[] = $header;
 	}
 
+	/**
+	 * Get the result of the Controller action.
+	 * @return mixed
+	 */
 	public function getResult()
 	{
 		return $this->result;
 	}
 
+	/**
+	 * Run the Controller action and return the result.
+	 * @return mixed Result from the controller.
+	 */
 	private function execute()
 	{
 		if (!is_callable(self::$config['get_controller_handle'])) {
