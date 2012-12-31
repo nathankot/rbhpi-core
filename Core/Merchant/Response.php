@@ -1,28 +1,21 @@
 <?php
+/**
+ * @version 0.1.0
+ */
 
 namespace Core\Merchant;
 
 use Core\Prototype\Response;
 
-class View extends \Core\Blueprint\Object implements
-	\Core\Wireframe\Merchant\View
+class Response extends \Core\Blueprint\Object implements
+	\Core\Wireframe\Merchant\Response
 {
 	protected static $config = [];
 
 	public static function init()
 	{
 		self::config([
-				'format_view_handlers' => [
-						'html' => function(Response $response) {
-							$view = $response->getResult();
-							return $view->toHTML();
-						}
-					,	'json' => function(Response $response) {
-							$view = $response->getResult();
-							return $view->toJSON();
-						}
-				]
-			,	'format_headers' => [
+				'format_headers' => [
 						'html' => ['Content-type: text/html']
 					,	'json' => ['Content-type: application/json']
 				]
@@ -38,7 +31,12 @@ class View extends \Core\Blueprint\Object implements
 	public static function renderSilent(Response $response)
 	{
 		self::config();
-		return self::$config['formats'][$response->getFormat()]($response);
+		$view = $response->getResult();
+		$method_name = "to".strtoupper($response->getFormat());
+		if (!method_exists($view, $method_name)) {
+			throw new \BadMethodException(get_class($view)." does not have the method `::{$method_name}`");
+		}
+		return $view->$method_name();
 	}
 
 	public static function render(Response $response)
@@ -49,8 +47,8 @@ class View extends \Core\Blueprint\Object implements
 		$format = $response->getFormat();
 		$status = $response->getStatus();
 
-		$headers = array_merge($headers, self::$config['format_headers'][$format]);
-		$headers = array_merge($header, self::$config['status_headers'][$status]);
+		$headers = array_merge($headers, (array)self::$config['format_headers'][$format]);
+		$headers = array_merge($header, (array)self::$config['status_headers'][$status]);
 
 		foreach ($headers as $header) {
 			header($header, true);

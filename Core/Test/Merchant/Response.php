@@ -5,9 +5,9 @@ namespace Core\Test\Merchant;
 use Core\Test\Mock\Route as RouteMock;
 use Core\Test\Mock\Controller as ControllerMock;
 use Core\Prototype\Response;
-use Core\Merchant\View as Subject;
+use Core\Merchant\Response as Subject;
 
-class View extends \Core\Test\Base
+class Response extends \Core\Test\Base
 {
 	public function init()
 	{
