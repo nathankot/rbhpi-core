@@ -35,6 +35,11 @@ abstract class Object
 				if ($reflection->isStatic()) {
 					$reflection->invoke(null);
 				}
+			} elseif (method_exists($class_name, 'preConfig')) {
+				$reflection = new \ReflectionMethod($class_name, 'preConfig');
+				if ($reflection->isStatic()) {
+					$reflection->invoke(null);
+				}
 			}
 		}
 		static::$config = array_merge_recursive(static::$config, $config);
