@@ -2,7 +2,4 @@
 
 namespace Exception;
 
-class AdapterNotFound extends \LogicException
-{
-
-}
+class AdapterNotFound extends \LogicException {}
