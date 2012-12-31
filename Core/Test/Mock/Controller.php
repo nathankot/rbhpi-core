@@ -2,10 +2,13 @@
 
 namespace Core\Test\Mock;
 
+use Core\Test\Mock\View;
+
 class Controller extends \Core\Blueprint\Controller
 {
 	public function method()
 	{
-		return 'test';
+		$data = 'test';
+		return new View($data);
 	}
 }
