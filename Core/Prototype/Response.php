@@ -6,6 +6,7 @@
 namespace Core\Prototype;
 
 use Core\Prototype\Route;
+use Core\Blueprint\View;
 
 /**
  * The response object encapsulates the response. It takes a `Core\Prototype\Route` and determines
@@ -167,6 +168,9 @@ class Response extends \Core\Blueprint\Object implements
 			throw new \BadMethodCallException("The controller `{$this->route->getController()}` does not have method `{$this->route->getMethod()}`");
 		}
 		$result = call_user_func_array([$controller, $this->route->getMethod()], $this->route->getArgs());
+		if (!($result instanceof View)) {
+			throw new \UnexpectedValueException("The Response from a Controller should be an instance of `Core\Blueprint\View`");
+		}
 		return $result;
 	}
 }
