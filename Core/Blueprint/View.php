@@ -14,6 +14,12 @@ abstract class View extends \Core\Blueprint\Object implements
 	use \Core\Augmentation\Adaptable;
 
 	/**
+	 * The configuration for this view.
+	 * @var array
+	 */
+	protected static $config;
+
+	/**
 	 * The data that it works with.
 	 * @var mixed
 	 */
@@ -23,7 +29,7 @@ abstract class View extends \Core\Blueprint\Object implements
 	 * The template name to use.
 	 * @var string
 	 */
-	public $template;
+	protected $template;
 
 	/**
 	 * Preconfiguration of the View class.
@@ -31,12 +37,21 @@ abstract class View extends \Core\Blueprint\Object implements
 	 */
 	public static function preConfig()
 	{
+		self::config([
+				'mustache_loader' => function() {
+
+				}
+			,	'mustache_partial_loader' => function() {
+
+				}
+		]);
+
 		self::adapt('toJSON', function($self, $args) {
 			return json_encode($self->getData());
 		});
 
 		self::adapt('toHTML', function($self, $args) {
-
+			$template = $self->getTemplate();
 		});
 	}
 
@@ -47,6 +62,7 @@ abstract class View extends \Core\Blueprint\Object implements
 	 */
 	public function init($data, $template = null)
 	{
+		self::config();
 		$this->data = $data;
 		$this->template = $template;
 	}
@@ -58,6 +74,15 @@ abstract class View extends \Core\Blueprint\Object implements
 	public function setTemplate($template)
 	{
 		$this->template = $template;
+	}
+
+	/**
+	 * Get the template that the view is using.
+	 * @return string The template.
+	 */
+	public function getTemplate()
+	{
+		return $this->template;
 	}
 
 	/**

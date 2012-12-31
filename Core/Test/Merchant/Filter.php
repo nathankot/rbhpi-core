@@ -28,7 +28,13 @@ class Filter extends Base
 	public function testEmail()
 	{
 		$this->message('Testing email filter');
-		$mock = 'nk@nathankot.com';
+		$mock = \Faker\Internet::email();
+		assert(Subject::email($mock) === true);
+		assert($this->testRegexp($mock, 'email') === true);
+		$mock = \Faker\Internet::freeEmail();
+		assert(Subject::email($mock) === true);
+		assert($this->testRegexp($mock, 'email') === true);
+		$mock = \Faker\Internet::safeEmail();
 		assert(Subject::email($mock) === true);
 		assert($this->testRegexp($mock, 'email') === true);
 		$mock = 'not.an@email';
@@ -80,6 +86,9 @@ class Filter extends Base
 	{
 		$this->message('Testing Phone Number filter');
 		$mock = '1234 534-930';
+		assert(Subject::phone($mock) === true);
+		assert($this->testRegexp($mock, 'phone') === true);
+		$mock = \Faker\PhoneNumber::phoneNumber();
 		assert(Subject::phone($mock) === true);
 		assert($this->testRegexp($mock, 'phone') === true);
 		$mock = 'not a number 12';
