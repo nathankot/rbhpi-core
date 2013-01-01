@@ -23,19 +23,19 @@ class Response extends \Core\Blueprint\Object implements
 	protected static $config = [
 			'format_headers' => []
 		,	'status_headers' => []
+		,	'exception_map' => [
+					"\\BadRequest" => 404
+				,	"\\LogicException" => 500
+				,	"\\RuntimeException" => 400
+				,	"\\Exception" => 500
+			]
 	];
 
-	public static function serveSilently(ResponsePrototype $response)
-	{
-		self::config();
-		$view = $response->getResult();
-		$method_name = "to".strtoupper($response->getFormat());
-		if (!method_exists($view, $method_name)) {
-			throw new \BadMethodException(get_class($view)." does not have the method `::{$method_name}`");
-		}
-		return $view->$method_name();
-	}
-
+	/**
+	 * Serve a `Core\Prototype\Response` Object with the appropriate headers.
+	 * @param  ResponsePrototype $response Response Object
+	 * @return void
+	 */
 	public static function serve(ResponsePrototype $response)
 	{
 		self::config();
@@ -56,7 +56,23 @@ class Response extends \Core\Blueprint\Object implements
 		# Update the Response Object.
 		$response->setHeaders($headers);
 
-		echo self::serveSilently($response);
+		$view = $response->getResult();
+		$method_name = "to".strtoupper($response->getFormat());
+
+		if (!method_exists($view, $method_name)) {
+			throw new \BadMethodException(get_class($view)." does not have the method `::{$method_name}`");
+		}
+
+		echo $view->$method_name();
+	}
+
+	public static function serveError($exception, $request)
+	{
+		foreach (self::$config['exception_map'] as $class => $status) {
+			if ($exception instanceof $class) {
+
+			}
+		}
 	}
 
 	/**

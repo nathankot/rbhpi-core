@@ -9,7 +9,7 @@ use Core\Prototype\Response as ResponsePrototype;
  */
 interface Response
 {
-	public static function serveSilently(ResponsePrototype $response);
 	public static function serve(ResponsePrototype $response);
+	public static function serveError($exception, $request);
 	public static function getLastSentHeaders();
 }
