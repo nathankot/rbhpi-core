@@ -44,7 +44,7 @@ abstract class Object
 				}
 			}
 		}
-		static::$config = array_merge(static::$config, $config);
+		static::$config = extend(static::$config, $config);
 		return static::$config;
 	}
 
