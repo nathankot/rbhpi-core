@@ -30,12 +30,14 @@ abstract class Object
 		if (!static::$is_init) {
 			static::$is_init = true;
 			$class_name = get_called_class();
+
 			if (method_exists($class_name, 'init')) {
 				$reflection = new \ReflectionMethod($class_name, 'init');
 				if ($reflection->isStatic()) {
 					$reflection->invoke(null);
 				}
-			} elseif (method_exists($class_name, 'preConfig')) {
+			}
+			if (method_exists($class_name, 'preConfig')) {
 				$reflection = new \ReflectionMethod($class_name, 'preConfig');
 				if ($reflection->isStatic()) {
 					$reflection->invoke(null);
