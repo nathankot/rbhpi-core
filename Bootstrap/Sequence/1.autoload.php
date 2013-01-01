@@ -19,4 +19,8 @@ spl_autoload_register(function($className) {
 	}
 });
 
-require ROOT . '/Vendor/autoload.php';
+# Register the Composer autoloader.
+$composer_loader = ROOT . '/Vendor/autoload.php';
+if (is_readable($composer_loader)) {
+	require $composer_loader;
+}
