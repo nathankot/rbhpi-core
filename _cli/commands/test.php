@@ -31,6 +31,7 @@ function test($class_name) {
 		new $class_name();
 		line();
 		message(Color::green('Testing complete.'));
+		line();
 	} else {
 		error("Class {$class_name} does not exist!");
 	}

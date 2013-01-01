@@ -9,7 +9,8 @@ abstract class Object
 {
 
 	/**
-	 * Every class has a configuration set.
+	 * Every class should have a configuration set. If it does not, it would use
+	 * the Object base class' configuration set.
 	 * @var array
 	 */
 	protected static $config = [];

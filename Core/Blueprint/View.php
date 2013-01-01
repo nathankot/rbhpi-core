@@ -17,7 +17,9 @@ abstract class View extends \Core\Blueprint\Object implements
 	 * The configuration for this view.
 	 * @var array
 	 */
-	protected static $config = [];
+	protected static $config = [
+			'default_layout' => 'default'
+	];
 
 	/**
 	 * The data that it works with.
@@ -32,6 +34,12 @@ abstract class View extends \Core\Blueprint\Object implements
 	protected $template;
 
 	/**
+	 * The layout to use.
+	 * @var string
+	 */
+	protected $layout;
+
+	/**
 	 * Constructor for the Object.
 	 * @param  array $data The data for the View object to use.
 	 * @return void
@@ -43,6 +51,7 @@ abstract class View extends \Core\Blueprint\Object implements
 		if ($template !== null) {
 			$this->template = $template;
 		}
+		$this->layout = self::$config['default_layout'];
 	}
 
 	/**
@@ -61,6 +70,24 @@ abstract class View extends \Core\Blueprint\Object implements
 	final public function getTemplate()
 	{
 		return $this->template;
+	}
+
+	/**
+	 * Use a different layout.
+	 * @param string $layout Name of the layout.
+	 */
+	final public function setLayout($layout)
+	{
+		$this->layout = $layout;
+	}
+
+	/**
+	 * Get the layout that the view is using.
+	 * @param string $layout The layout.
+	 */
+	final public function getLayout()
+	{
+		return $this->layout;
 	}
 
 	/**

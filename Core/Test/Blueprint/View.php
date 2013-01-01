@@ -17,8 +17,9 @@ class View extends \Core\Test\Base
 
 		$view = new ViewMock($data);
 		$view->setTemplate(ROOT.'/Core/Core/Test/Mock/MustacheTemplate.mustache');
+		$view->setLayout(null);
 
-		$this->message('Testing HTML rendering with a Mustache Template.');
+		$this->message('Testing HTML rendering with a Mustache Template, and without a layout.');
 
 		$result = $view->toHTML();
 
@@ -28,6 +29,12 @@ class View extends \Core\Test\Base
 		assert(strpos($result, 'one-two-three') !== false);
 		$this->message('Making sure that partials are loading.');
 		assert(strpos($result, 'partial') !== false);
+
+		$this->message('Testing HTML rendering with a Mustache Template & Layout');
+
+		$view->setLayout(ROOT.'/Core/Core/Test/Mock/MustacheLayout.mustache');
+		$result = $view->toHTML();
+		assert(strpos($result, 'layout') !== false);
 
 		$this->message("Testing JSON rendering.");
 

@@ -4,7 +4,7 @@ namespace Core\Test\Merchant;
 
 use Core\Test\Mock\Route as RouteMock;
 use Core\Test\Mock\Controller as ControllerMock;
-use Core\Prototype\Response;
+use Core\Prototype\Response as ResponsePrototype;
 use Core\Merchant\Response as Subject;
 
 class Response extends \Core\Test\Base
@@ -13,14 +13,14 @@ class Response extends \Core\Test\Base
 	{
 		$this->message('Creating a Mock Response to be used for the views.');
 
-		Response::config([
+		ResponsePrototype::config([
 				'get_controller_handle' => function($name) {
 					return new ControllerMock();
 				}
 		]);
 
 		$route = new RouteMock();
-		$this->response = new Response($route);
+		$this->response = new ResponsePrototype($route);
 	}
 
 	public function test()

@@ -4,7 +4,6 @@
  */
 
 foreach (glob(ROOT.'/Bootstrap/Config/*.php') as $file) {
-	echo $file;
 	require_once $file;
 }
 

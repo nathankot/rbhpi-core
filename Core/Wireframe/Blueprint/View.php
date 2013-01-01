@@ -13,6 +13,8 @@ interface View
 	public function init($data);
 	public function setTemplate($template);
 	public function getTemplate();
+	public function setLayout($layout);
+	public function getLayout();
 	public function getData();
 	public function toJSON();
 	public function toHTML();
