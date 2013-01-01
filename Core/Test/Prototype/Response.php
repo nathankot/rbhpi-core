@@ -24,7 +24,7 @@ class Response extends \Core\Test\Base
 		$this->message('Testing Response result');
 
 		$result = $response->getResult();
-		assert($result instanceof Core\Blueprint\View);
+		assert($result instanceof \Core\Blueprint\View);
 
 		$this->message('Testing Response format');
 

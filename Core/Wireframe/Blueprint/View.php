@@ -10,10 +10,9 @@ namespace Core\Wireframe\Blueprint;
  */
 interface View
 {
-	public $data;
-	public $template;
 	public function init($data);
 	public function setTemplate($template);
+	public function getTemplate();
 	public function getData();
 	public function toJSON();
 	public function toHTML();

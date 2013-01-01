@@ -17,7 +17,7 @@ abstract class View extends \Core\Blueprint\Object implements
 	 * The configuration for this view.
 	 * @var array
 	 */
-	protected static $config;
+	protected static $config = [];
 
 	/**
 	 * The data that it works with.

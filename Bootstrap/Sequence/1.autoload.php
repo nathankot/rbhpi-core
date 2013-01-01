@@ -18,3 +18,5 @@ spl_autoload_register(function($className) {
 		}
 	}
 });
+
+require ROOT . '/Vendor/autoload.php';
