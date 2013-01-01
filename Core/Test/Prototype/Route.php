@@ -3,7 +3,7 @@
 namespace Core\Test\Prototype;
 
 use Core\Prototype\Route as Subject;
-use Core\Prototype\Request;
+use Core\Prototype\Request as RequestPrototype;
 
 class Route extends \Core\Test\Base
 {
@@ -37,7 +37,7 @@ class Route extends \Core\Test\Base
 		////
 		$this->message('Testing Route parser: Basic Route');
 
-		$request= new Request('One/Two/Three.json');
+		$request= new RequestPrototype('One/Two/Three.json');
 		$route = new Subject($request);
 
 		assert($route->getController() === 'One');
@@ -48,7 +48,7 @@ class Route extends \Core\Test\Base
 		////
 		$this->message('Testing Route parser: Regex filter, and Splat Integer Filter');
 
-		$request = new Request('controller', 'abCde', '1234', '5678', '910');
+		$request = new RequestPrototype('controller', 'abCde', '1234', '5678', '910');
 		$route = new Subject($request);
 
 		assert($route->getController() === 'controller');
@@ -59,18 +59,13 @@ class Route extends \Core\Test\Base
 		////
 		$this->message('Testing Route parser: Complex route with email filter');
 
-		$request = new Request('one/two/nk@nathankot.com');
+		$request = new RequestPrototype('one/two/nk@nathankot.com');
 		$route = new Subject($request);
 
 		assert($route->getController() === 'two');
 		assert($route->getMethod() === 'one');
 		assert($route->getArgs() === ['nk@nathankot.com']);
 		assert($route->getFormat() === 'html');
-	}
-
-	public function testDefaultHandler()
-	{
-
 	}
 
 }

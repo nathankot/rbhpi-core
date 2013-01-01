@@ -26,10 +26,8 @@ try {
 
 function test($class_name) {
 	if (class_exists($class_name)) {
-		message("Testing {$class_name}");
-		line();
+		message(Color::yellow("Testing {$class_name}"));
 		new $class_name();
-		line();
 		message(Color::green('Testing complete.'));
 		line();
 	} else {

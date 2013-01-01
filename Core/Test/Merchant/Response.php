@@ -21,31 +21,31 @@ class Response extends \Core\Test\Base
 
 		$route = new RouteMock();
 		$this->response = new ResponsePrototype($route);
+		$this->response->getResult()->setTemplate(ROOT.'/Core/Core/Test/Mock/MustacheTemplate.mustache');
+		$this->response->getResult()->setLayout(null);
 	}
 
 	public function test()
 	{
-		$this->message('Testing render of HTML view');
+		$this->message('Testing headers are correct in response.');
 
-		$response_1 = clone $this->response;
-		$result = Subject::renderSilent($response_1);
+		$this->message('Testing 200 OK header');
+		ob_start(); Subject::serve($this->response); ob_end_clean();
+		$headers = Subject::getLastSentHeaders();
+		assert(in_array('Status: 200 OK', $headers));
+		assert(in_array('Content-type: text/html', $headers));
 
-		$this->message('Testing render of JSON view');
+		$this->message('Testing 404 Not Found header');
+		$this->response->setStatus(404);
+		ob_start(); Subject::serve($this->response); ob_end_clean();
+		$headers = Subject::getLastSentHeaders();
+		assert(in_array('Status: 404 Not Found', $headers));
 
-		$response_2 = clone $this->response;
-		$response_2->setFormat('json');
-		$result = Subject::renderSilent($response_2);
-
-		$this->message('Testing render of erronous Status');
-
-		$response_3 = clone $this->response;
-		$response_3->setStatus(400);
-		$result = Subject::renderSilent($response_3);
-
-		$response_3->setStatus(403);
-		$result = Subject::renderSilent($response_3);
-
-		$response_3->setStatus(500);
-		$result = Subject::renderSilent($response_3);
+		$this->message('Testing JSON content-type header');
+		$this->response->setFormat('json');
+		ob_start(); Subject::serve($this->response); ob_end_clean();
+		$headers = Subject::getLastSentHeaders();
+		assert(in_array('Status: 404 Not Found', $headers));
+		assert(in_array('Content-type: application/json', $headers));
 	}
 }

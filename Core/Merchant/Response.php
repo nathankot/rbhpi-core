@@ -10,12 +10,22 @@ use Core\Prototype\Response as ResponsePrototype;
 class Response extends \Core\Blueprint\Object implements
 	\Core\Wireframe\Merchant\Response
 {
+	/**
+	 * Stores headers that were last sent by this merchant.
+	 * @var array
+	 */
+	private static $last_sent_headers = [];
+
+	/**
+	 * Class configuration.
+	 * @var array
+	 */
 	protected static $config = [
 			'format_headers' => []
 		,	'status_headers' => []
 	];
 
-	public static function renderSilent(ResponsePrototype $response)
+	public static function serveSilently(ResponsePrototype $response)
 	{
 		self::config();
 		$view = $response->getResult();
@@ -26,7 +36,7 @@ class Response extends \Core\Blueprint\Object implements
 		return $view->$method_name();
 	}
 
-	public static function render(ResponsePrototype $response)
+	public static function serve(ResponsePrototype $response)
 	{
 		self::config();
 
@@ -34,16 +44,27 @@ class Response extends \Core\Blueprint\Object implements
 		$format = $response->getFormat();
 		$status = $response->getStatus();
 
-		$headers = array_unshift($headers, self::$config['format_headers'][$format]);
-		$headers = array_unshift($headers, self::$config['status_headers'][$status]);
+		$headers = array_merge($headers, self::$config['format_headers'][$format]);
+		$headers = array_merge($headers, self::$config['status_headers'][$status]);
 
 		foreach ($headers as $header) {
 			header($header, true);
 		}
 
+		self::$last_sent_headers = $headers;
+
 		# Update the Response Object.
 		$response->setHeaders($headers);
 
-		echo self::renderSilent($response);
+		echo self::serveSilently($response);
+	}
+
+	/**
+	 * Get the headers that were sent. Primarily used for testing in CLI environments.
+	 * @return array Headers last sent.
+	 */
+	public static function getLastSentHeaders()
+	{
+		return self::$last_sent_headers;
 	}
 }

@@ -8,7 +8,10 @@ class Controller extends \Core\Blueprint\Controller
 {
 	public function method()
 	{
-		$data = 'test';
+		$data = [
+				'numbers' => ['one', 'two', 'three']
+			,	'boolean' => true
+		];
 		return new View($data);
 	}
 }
