@@ -18,7 +18,7 @@ abstract class Object
 	 * Has the static init method been called?
 	 * @var boolean
 	 */
-	protected static $is_init = false;
+	protected static $initiated_classes = [];
 
 	/**
 	 * Class configuration sets can be adjusted by passing additional configuration parameters.
@@ -27,10 +27,9 @@ abstract class Object
 	 */
 	final public static function config($config = [])
 	{
-		if (!static::$is_init) {
-			static::$is_init = true;
-			$class_name = get_called_class();
-
+		$class_name = get_called_class();
+		if (!isset(self::$initiated_classes[$class_name])) {
+			self::$initiated_classes[$class_name] = true;
 			if (method_exists($class_name, 'init')) {
 				$reflection = new \ReflectionMethod($class_name, 'init');
 				if ($reflection->isStatic()) {
