@@ -49,25 +49,32 @@ class Response extends \Core\Blueprint\Object implements
 	private $result;
 
 	/**
+	 * Default configuration for this class.
+	 * @return void
+	 */
+	public static function preConfig()
+	{
+		# Default controller getter
+		self::config([
+				'get_controller_handle' => function($name, $args = []) {
+						$class_name = "\\App\\Controller\\{$name}";
+						if (!class_exists($class_name)) {
+							throw new \Exception\BadController("The controller `{$class_name}` does not exist!");
+						}
+						$reflect = new \ReflectionClass($class_name);
+						return $reflect->newInstanceArgs($args);
+				}
+		]);
+	}
+
+	/**
 	 * Take a `Route` as the dependency. **Runs** the proper controller action and stores the result.
 	 * @param  Route  $route The route Object
 	 * @return void
 	 */
 	public function init(Route $route)
 	{
-		# Default controller getter
-		if (empty(self::$config['get_controller_handle'])) {
-			self::config([
-					'get_controller_handle' => function($name, $args = []) {
-							$class_name = "\\App\\Controller\\{$name}";
-							if (!class_exists($class_name)) {
-								throw new \Exception\BadController("The controller `{$class_name}` does not exist!");
-							}
-							$reflect = new \ReflectionClass($class_name);
-							return $reflect->newInstanceArgs($args);
-					}
-			]);
-		}
+		self::config();
 		$this->route = $route;
 		$this->format = $route->getFormat();
 		$this->result = $this->execute();

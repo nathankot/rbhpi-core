@@ -16,9 +16,9 @@ class Request extends \Core\Blueprint\Object implements
 	 * @var array
 	 */
 	protected static $config = [
-			'available_formats' => array('html', 'json')
-		,	'default_format' => 'html'
-		,	'default_method' => 'GET'
+			'available_formats' => []
+		,	'default_format' => ''
+		,	'default_method' => ''
 	];
 
 	/**

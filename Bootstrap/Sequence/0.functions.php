@@ -14,7 +14,7 @@ function extend($a, $b) {
             if( !isset($a[$k]) ) {
                 $a[$k] = $v;
             } else {
-                $a[$k] = array_extend($a[$k], $v);
+                $a[$k] = extend($a[$k], $v);
             }
         } else {
             $a[$k] = $v;

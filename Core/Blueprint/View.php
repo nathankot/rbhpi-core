@@ -32,36 +32,6 @@ abstract class View extends \Core\Blueprint\Object implements
 	protected $template;
 
 	/**
-	 * Preconfiguration of the View class. (These are the default adapters)
-	 * @return void
-	 */
-	public static function preConfig()
-	{
-		self::config([
-				'mustache_escape' => function($text) {
-					return htmlspecialchars($text, ENT_COMPAT, 'UTF-8');
-				}
-			,	'mustache_helpers' => []
-		]);
-
-		self::adapt('toJSON', function($self, $args) {
-			return json_encode($self->getData());
-		});
-
-		self::adapt('toHTML', function($self, $args) {
-			$mustache = new \Mustache_Engine([
-					'cache' => ROOT.'/_tmp'
-				,	'loader' => new \Core\Prototype\MustacheLoader(ROOT.'/App/Template/')
-				,	'partials_loader' => new \Core\Prototype\MustacheLoader(ROOT.'/App/Template/Partial/')
-				,	'escape' => self::$config['mustache_escape']
-				,	'helpers' => self::$config['mustache_helpers']
-			]);
-			$template = $mustache->loadTemplate($self->getTemplate());
-			return $template->render($self);
-		});
-	}
-
-	/**
 	 * Constructor for the Object.
 	 * @param  array $data The data for the View object to use.
 	 * @return void

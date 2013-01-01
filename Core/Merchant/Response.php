@@ -5,30 +5,17 @@
 
 namespace Core\Merchant;
 
-use Core\Prototype\Response;
+use Core\Prototype\Response as ResponsePrototype;
 
 class Response extends \Core\Blueprint\Object implements
 	\Core\Wireframe\Merchant\Response
 {
-	protected static $config = [];
+	protected static $config = [
+			'format_headers' => []
+		,	'status_headers' => []
+	];
 
-	public static function init()
-	{
-		self::config([
-				'format_headers' => [
-						'html' => ['Content-type: text/html']
-					,	'json' => ['Content-type: application/json']
-				]
-			,	'status_headers' => [
-						'200' => ['Status: 200 OK']
-					,	'404' => ['Status: 404 Not Found']
-					,	'403' => ['Status: 493 Forbidden']
-					, '500' => ['Status: 500 Internal Server Error']
-				]
-		]);
-	}
-
-	public static function renderSilent(Response $response)
+	public static function renderSilent(ResponsePrototype $response)
 	{
 		self::config();
 		$view = $response->getResult();
@@ -39,7 +26,7 @@ class Response extends \Core\Blueprint\Object implements
 		return $view->$method_name();
 	}
 
-	public static function render(Response $response)
+	public static function render(ResponsePrototype $response)
 	{
 		self::config();
 
@@ -47,8 +34,8 @@ class Response extends \Core\Blueprint\Object implements
 		$format = $response->getFormat();
 		$status = $response->getStatus();
 
-		$headers = array_merge($headers, (array)self::$config['format_headers'][$format]);
-		$headers = array_merge($header, (array)self::$config['status_headers'][$status]);
+		$headers = array_unshift($headers, self::$config['format_headers'][$format]);
+		$headers = array_unshift($headers, self::$config['status_headers'][$status]);
 
 		foreach ($headers as $header) {
 			header($header, true);
