@@ -74,7 +74,7 @@ class Request extends \Core\Blueprint\Object implements
 		$last = explode('.', $last);
 		$format = end($last);
 		if (empty($format)) {
-			$this->format = $_SERVER['HTTP_ACCEPT'] ? \Bitworking\Mimeparse::bestMatch(self::$config['available_formats'], $_SERVER['HTTP_ACCEPT']) : null;
+			$this->format = isset($_SERVER['HTTP_ACCEPT']) ? \Bitworking\Mimeparse::bestMatch(self::$config['available_formats'], $_SERVER['HTTP_ACCEPT']) : null;
 		}
 		if (in_array($format, self::$config['available_formats'])) {
 			$this->format = array_pop($last);

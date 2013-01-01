@@ -7,6 +7,9 @@ namespace Core\Merchant;
 
 use Core\Prototype\Response as ResponsePrototype;
 
+/**
+ * The Response Merchant provides an interface to push responses to the client.
+ */
 class Response extends \Core\Blueprint\Object implements
 	\Core\Wireframe\Merchant\Response
 {
@@ -66,11 +69,17 @@ class Response extends \Core\Blueprint\Object implements
 		echo $view->$method_name();
 	}
 
+	/**
+	 * Got an exception? Serve it.
+	 * @param  \Exception $exception Exception object.
+	 * @param  \Core\Prototype\Request $request   Initial request object.
+	 * @return void
+	 */
 	public static function serveError($exception, $request)
 	{
 		foreach (self::$config['exception_map'] as $class => $status) {
 			if ($exception instanceof $class) {
-
+				break;
 			}
 		}
 	}
