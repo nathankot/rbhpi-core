@@ -25,7 +25,7 @@ class Request extends \Core\Test\Base
 		$this->message('Testing Request with basic URI string');
 
 		$mock_uri = '/one/two/three.format';
-		$request = new Subject($mock_uri);
+		$request = new Subject(['path' => $mock_uri]);
 
 		assert($request->getFormat() === 'format');
 		assert($request->getComponents() === ['one', 'two', 'three']);
@@ -34,7 +34,7 @@ class Request extends \Core\Test\Base
 		////
 		$this->message('Testing Request with multi-parameter route');
 
-		$request = new Subject('one/two/three/.format');
+		$request = new Subject(['path' => 'one/two/three.format']);
 
 		assert($request->getFormat() === 'format');
 		assert($request->getComponents() === ['one', 'two', 'three']);
@@ -43,7 +43,7 @@ class Request extends \Core\Test\Base
 		////
 		$this->message('Testing server request method');
 
-		$request = new Subject('one/two/three');
+		$request = new Subject(['path' => 'one/two/three']);
 
 		assert($request->getMethod() === 'PUT');
 
@@ -53,7 +53,7 @@ class Request extends \Core\Test\Base
 
 		////
 		$this->message('Testing custom request host.');
-		$request = new Subject('one/two/three', 'test.com');
+		$request = new Subject(['path' => 'one/two/three', 'host' => 'test.com']);
 		assert($request->getHost() === 'test.com');
 	}
 }

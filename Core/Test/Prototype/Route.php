@@ -37,7 +37,7 @@ class Route extends \Core\Test\Base
 		////
 		$this->message('Testing Route parser: Basic Route');
 
-		$request= new RequestPrototype('One/Two/Three.json');
+		$request= new RequestPrototype(['path' => 'One/Two/Three.json']);
 		$route = new Subject($request);
 
 		assert($route->getController() === 'One');
@@ -48,7 +48,7 @@ class Route extends \Core\Test\Base
 		////
 		$this->message('Testing Route parser: Regex filter, and Splat Integer Filter');
 
-		$request = new RequestPrototype('controller/abCde/1234/5678/910');
+		$request = new RequestPrototype(['path' => 'controller/abCde/1234/5678/910']);
 		$route = new Subject($request);
 
 		assert($route->getController() === 'controller');
@@ -59,7 +59,7 @@ class Route extends \Core\Test\Base
 		////
 		$this->message('Testing Route parser: Complex route with email filter');
 
-		$request = new RequestPrototype('one/two/nk@nathankot.com');
+		$request = new RequestPrototype(['path' => 'one/two/nk@nathankot.com']);
 		$route = new Subject($request);
 
 		assert($route->getController() === 'two');

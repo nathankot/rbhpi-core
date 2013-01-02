@@ -26,6 +26,11 @@
 		]
 ]);
 
+# Handle that converts the view object into JSON
+\Core\Blueprint\View::adapt('toJSON', function($self, $args) {
+	return json_encode($self->getData());
+});
+
 # Escape function and helpers when using the Mustache Templating Engine
 \Core\Blueprint\View::config([
 		'mustache_escape' => function($text) {
@@ -33,11 +38,6 @@
 		}
 	,	'mustache_helpers' => []
 ]);
-
-# Handle that converts the view object into JSON
-\Core\Blueprint\View::adapt('toJSON', function($self, $args) {
-	return json_encode($self->getData());
-});
 
 # Handle that converts the view object into HTML
 \Core\Blueprint\View::adapt('toHTML', function($self, $args) {

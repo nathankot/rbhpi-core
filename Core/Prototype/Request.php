@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 0.2.0
+ * @version 1.0.0
  */
 
 namespace Core\Prototype;
@@ -11,6 +11,9 @@ namespace Core\Prototype;
 class Request extends \Core\Blueprint\Object implements
 	\Core\Wireframe\Prototype\Request
 {
+
+	use \Core\Augmentation\HTTP;
+
 	/**
 	 * Class-wide configuration.
 	 * @var array
@@ -46,6 +49,12 @@ class Request extends \Core\Blueprint\Object implements
 	private $components;
 
 	/**
+	 * The payload of the request (Either from the request body or POST)
+	 * @var mixed
+	 */
+	private $payload;
+
+	/**
 	 * Parse the given arguemnts. This class can accept:
 	 *
 	 * - An array
@@ -54,39 +63,54 @@ class Request extends \Core\Blueprint\Object implements
 	 *
 	 * @return void
 	 */
-	public function init($path = null, $host = 'localhost')
+	public function init($request_components = [
+			'path' => null
+		,	'payload' => null
+		,	'host' => null
+		,	'method' => null
+		,	'format' => null
+	])
 	{
-		if ($path === null) {
-			$path = $_SERVER['REQUEST_URI'];
-		}
-		$this->host = $host;
-		$this->path = '/' . trim($path, '/');
-		$this->path = str_replace('/.', '.', $this->path);
-		$this->method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : self::$config['default_method'];
-		$this->breakItDown();
+		$guessed_request_components = array_filter($this->getRequest());
+		$request_components = array_filter($request_components);
+
+		$request_components = array_merge($guessed_request_components, $request_components);
+
+		$this->path = $request_components['path'] ?: null;
+		$this->payload = $request_components['payload'] ?: null;
+		$this->host = $request_components['host'] ?: null;
+		$this->method = $request_components['method'] ?: null;
+		$this->format = $request_components['format'] ?: null;
+
+		$this->breakToComponents();
 	}
 
 	/**
 	 * Break the path down into an array of components, and the format.
 	 * @return void
 	 */
-	private function breakItDown()
+	private function breakToComponents()
 	{
 		$components = explode('/', trim($this->path, '/'));
+
 		$last = array_pop($components);
 		$last = explode('.', $last);
 		$format = end($last);
-		if (empty($format)) {
-			$this->format = isset($_SERVER['HTTP_ACCEPT']) ? \Bitworking\Mimeparse::bestMatch(self::$config['available_formats'], $_SERVER['HTTP_ACCEPT']) : null;
+
+		if (!empty($format) && in_array($format, self::$config['available_formats'])) {
+			$this->format = $format;
+			array_pop($last);
 		}
-		if (in_array($format, self::$config['available_formats'])) {
-			$this->format = array_pop($last);
-		}
+
 		$components = array_merge($components, array_filter($last));
+
 		$this->components = $components;
+
 		if (empty($this->format)) {
 			$this->format = self::$config['default_format'];
 		}
+
+		$this->path = '/'.trim($this->path, '/');
 	}
 
 	public function getFormat()
@@ -112,5 +136,10 @@ class Request extends \Core\Blueprint\Object implements
 	public function getHost()
 	{
 		return $this->host;
+	}
+
+	public function getPayload()
+	{
+		return $this->payload;
 	}
 }
