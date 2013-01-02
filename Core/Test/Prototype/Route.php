@@ -66,6 +66,7 @@ class Route extends \Core\Test\Base
 		assert($route->getMethod() === 'one');
 		assert($route->getArgs() === ['nk@nathankot.com']);
 		assert($route->getFormat() === 'html');
+
 	}
 
 }

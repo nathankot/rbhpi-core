@@ -10,7 +10,10 @@ trait HTTP
 	{
 		$request_uri = trim($_SERVER['REQUEST_URI'], '/');
 
-		if ($request_uri === '__RBHP_MAKE_REQUEST') {
+		if ($request_uri === self::$config['rbhp_injection_token']) {
+			if (strtolower($_SERVER['REQUEST_METHOD']) !== 'post') {
+				throw new \Exception\BadRequest("RBHP Injections can only be accomplished with POST.");
+			}
 			$object = unserialize(file_get_contents('php://input'));
 			$path = $object->getPath();
 			$payload = $object->getPayload();
@@ -32,17 +35,22 @@ trait HTTP
 		];
 	}
 
-	protected function injectRoute($host, Request $request)
+	protected function injectRoute(Request $request)
 	{
-		$host = ltrim($host, 'http:');
-		$host = trim($host, '/');
+		$host = $request->getHost();
+		$host = str_replace('http://', '', $host);
+		$host = rtrim($host, '/');
 		$host = "http://{$host}";
-		$url = "{$host}/__RBHP_MAKE_REQUEST";
+		$url = "{$host}/".self::$config['rbhp_injection_token'];
 		$data = serialize($request);
 		$headers = [
 				'Content-type' => 'text/x-rbhprequest'
 		];
 		$response = \Requests::post($url, $headers, $data, $options);
-		return unserialize($response->body);
+		$data = unserialize($response->body);
+		if ($data === false) {
+			$data = $response->body;
+		}
+		return $data;
 	}
 }

@@ -55,5 +55,34 @@ class Request extends \Core\Test\Base
 		$this->message('Testing custom request host.');
 		$request = new Subject(['path' => 'one/two/three', 'host' => 'test.com']);
 		assert($request->getHost() === 'test.com');
+
+		////
+		$this->message('Testing custom request payload.');
+		$request = new Subject(['path' => 'one/two/three', 'payload' => ['test' => 'array']]);
+		assert($request->getPayload() === ['test' => 'array']);
+
+		////
+		$this->message('Testing request injection');
+
+		$this->message('Testing faux requests to httpbin.org');
+
+		# This is the httpbin.org URI we are testing
+		Subject::config(['rbhp_injection_token' => 'post']);
+
+		$request = new Subject([
+				'path' => 'one/two/three'
+			,	'host' => 'httpbin.org'
+			,	'payload' => 'test string'
+			,	'format' => 'json'
+			,	'method' => 'get'
+		]);
+
+		$response = $request->injectTo();
+		$response = json_decode($response, true);
+		$sent_request = unserialize($response['data']);
+		assert($sent_request->getPath() === '/one/two/three');
+		assert($sent_request->getPayload() === 'test string');
+		assert($sent_request->getMethod() === 'get');
+		assert($sent_request->getFormat() === 'json');
 	}
 }

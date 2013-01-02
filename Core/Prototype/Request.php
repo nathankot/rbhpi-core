@@ -22,6 +22,7 @@ class Request extends \Core\Blueprint\Object implements
 			'available_formats' => []
 		,	'default_format' => ''
 		,	'default_method' => ''
+		,	'rbhp_injection_token' => '__RBHP_MAKE_REQUEST'
 	];
 
 	/**
@@ -83,6 +84,16 @@ class Request extends \Core\Blueprint\Object implements
 		$this->format = $request_components['format'] ?: null;
 
 		$this->breakToComponents();
+	}
+
+	/**
+	 * Inject this request to another server via an HTTP request, and get the response.
+	 * @return mixed The response from the server.
+	 */
+	public function injectTo($host = null)
+	{
+		$this->host = $host ?: $this->getHost();
+		return $this->injectRoute($this);
 	}
 
 	/**

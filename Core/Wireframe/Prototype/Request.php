@@ -23,4 +23,5 @@ interface Request
 	public function getMethod();
 	public function getHost();
 	public function getPayload();
+	public function injectTo($host = null);
 }
