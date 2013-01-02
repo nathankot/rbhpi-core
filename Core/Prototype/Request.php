@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 0.1.0
+ * @version 0.2.0
  */
 
 namespace Core\Prototype;
@@ -28,6 +28,12 @@ class Request extends \Core\Blueprint\Object implements
 	private $path;
 
 	/**
+	 * The host in which to execute the route from, defaults to self.
+	 * @var string
+	 */
+	private $host = 'localhost';
+
+	/**
 	 * Format of the route, defaults to `static::$config['default_format']`.
 	 * @var string
 	 */
@@ -48,16 +54,13 @@ class Request extends \Core\Blueprint\Object implements
 	 *
 	 * @return void
 	 */
-	protected function init()
+	public function init($path = null, $host = 'localhost')
 	{
-		$args = func_get_args();
-		if (count($args) === 1) {
-			$args = $args[0];
+		if ($path === null) {
+			$path = $_SERVER['REQUEST_URI'];
 		}
-		if (is_array($args)) {
-			$args = implode('/', $args);
-		}
-		$this->path = '/' . trim($args, '/');
+		$this->host = $host;
+		$this->path = '/' . trim($path, '/');
 		$this->path = str_replace('/.', '.', $this->path);
 		$this->method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : self::$config['default_method'];
 		$this->breakItDown();
@@ -104,5 +107,10 @@ class Request extends \Core\Blueprint\Object implements
 	public function getMethod()
 	{
 		return $this->method;
+	}
+
+	public function getHost()
+	{
+		return $this->host;
 	}
 }

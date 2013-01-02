@@ -87,10 +87,10 @@ class Route extends \Core\Blueprint\Object implements
 		};
 		## End, start your average method logic: ##
 		if (!is_string($route)) {
-			trigger_error('Core\Prototype\Route::connect($route, $handle) must take a string as $route.', E_USER_ERROR);
+			throw new \InvalidArgumentException('Core\Prototype\Route::connect($route, $handle) must take a string as $route.');
 		}
 		if ($handle && !is_callable($handle)) {
-			trigger_error('Core\Prototype\Route::connect($route, $handle) must take a callable as $handle.', E_USER_ERROR);
+			throw new \InvalidArgumentException('Core\Prototype\Route::connect($route, $handle) must take a callable as $handle.');
 		}
 		if (!$handle) {
 			$handle = self::$config['default_handle'];

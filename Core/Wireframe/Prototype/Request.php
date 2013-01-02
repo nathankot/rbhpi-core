@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 0.1.0
+ * @version 0.2.0
  */
 
 namespace Core\Wireframe\Prototype;
@@ -10,8 +10,10 @@ namespace Core\Wireframe\Prototype;
  */
 interface Request
 {
+	public function init($path);
 	public function getFormat();
 	public function getComponents();
 	public function getPath();
 	public function getMethod();
+	public function getHost();
 }

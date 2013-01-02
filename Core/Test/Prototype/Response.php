@@ -35,5 +35,30 @@ class Response extends \Core\Test\Base
 
 		$result = $response->getStatus();
 		assert($result === 200);
+
+		$this->message('Testing Response serving.');
+		$response->getResult()->setTemplate(ROOT.'/Core/Core/Test/Mock/MustacheTemplate.mustache');
+		$response->getResult()->setLayout(null);
+
+		$this->message('Testing headers are correct in the response');
+
+		$this->message('Testing 200 OK header');
+		ob_start(); $response->serve(); ob_end_clean();
+		$headers = $response->getLastSentHeaders();
+		assert(in_array('Status: 200 OK', $headers));
+		assert(in_array('Content-type: text/html', $headers));
+
+		$this->message('Testing 404 Not Found header');
+		$response->setStatus(404);
+		ob_start(); $response->serve(); ob_end_clean();
+		$headers = $response->getLastSentHeaders();
+		assert(in_array('Status: 404 Not Found', $headers));
+
+		$this->message('Testing JSON content-type header');
+		$response->setFormat('json');
+		ob_start(); $response->serve(); ob_end_clean();
+		$headers = $response->getLastSentHeaders();
+		assert(in_array('Status: 404 Not Found', $headers));
+		assert(in_array('Content-type: application/json', $headers));
 	}
 }

@@ -12,7 +12,7 @@
 ]);
 
 # Headers that the Response will send depending on the response format
-\Core\Merchant\Response::config([
+\Core\Prototype\Response::config([
 		'format_headers' => [
 				'html' => ['Content-type: text/html']
 			,	'json' => ['Content-type: application/json']

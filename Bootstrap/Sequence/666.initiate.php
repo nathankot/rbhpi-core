@@ -7,12 +7,12 @@
 
 if (php_sapi_name() !== 'cli') {
 	try {
-		$request = new \Core\Prototype\Request($_SERVER['REQUEST_URI']);
+		$request = new \Core\Prototype\Request();
 		$route = new \Core\Prototype\Route($request);
 		$response = new \Core\Prototype\Response($route);
-		\Core\Merchant\Response::serve($response);
+		$response->serve();
 	} catch (Exception $e) {
-		\Core\Merchant\Response::serveError($e, $request);
+		# @todo : Do something with the caught exception.
 	}
 }
 

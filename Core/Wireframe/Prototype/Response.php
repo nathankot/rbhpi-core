@@ -20,4 +20,6 @@ interface Response
 	public function getHeaders();
 	public function getResult();
 	public function getRoute();
+	public function serve();
+	public static function getLastSentHeaders();
 }

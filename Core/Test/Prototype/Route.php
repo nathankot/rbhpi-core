@@ -48,7 +48,7 @@ class Route extends \Core\Test\Base
 		////
 		$this->message('Testing Route parser: Regex filter, and Splat Integer Filter');
 
-		$request = new RequestPrototype('controller', 'abCde', '1234', '5678', '910');
+		$request = new RequestPrototype('controller/abCde/1234/5678/910');
 		$route = new Subject($request);
 
 		assert($route->getController() === 'controller');

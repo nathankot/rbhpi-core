@@ -19,6 +19,28 @@ class Response extends \Core\Blueprint\Object implements
 	\Core\Wireframe\Prototype\Response
 {
 	/**
+	 * Response configuration.
+	 * @var array
+	 */
+	protected static $config = [
+			'format_headers' => []
+		,	'status_headers' => []
+		,	'exception_map' => [
+					"\\BadRequest" => 404
+				,	"\\LogicException" => 500
+				,	"\\RuntimeException" => 400
+				,	"\\Exception" => 500
+			]
+		,	'get_controller_handle' => null
+	];
+
+	/**
+	 * Stores headers that were last sent by this class.
+	 * @var array
+	 */
+	private static $last_sent_headers = [];
+
+	/**
 	 * The injected Route.
 	 * @var Core\Prototype\Route
 	 */
@@ -65,6 +87,15 @@ class Response extends \Core\Blueprint\Object implements
 						return $reflect->newInstanceArgs($args);
 				}
 		]);
+	}
+
+	/**
+	 * Get the headers that were sent. Primarily used for testing in CLI environments.
+	 * @return array Headers last sent.
+	 */
+	public static function getLastSentHeaders()
+	{
+		return self::$last_sent_headers;
 	}
 
 	/**
@@ -162,6 +193,40 @@ class Response extends \Core\Blueprint\Object implements
 	}
 
 	/**
+	 * Serve the response with appropriate headers.
+	 * @return void
+	 */
+	public function serve()
+	{
+		self::config();
+
+		$headers = $this->getHeaders();
+		$format = $this->getFormat();
+		$status = $this->getStatus();
+
+		$headers = array_merge($headers, self::$config['format_headers'][$format]);
+		$headers = array_merge($headers, self::$config['status_headers'][$status]);
+
+		foreach ($headers as $header) {
+			header($header, true);
+		}
+
+		self::$last_sent_headers = $headers;
+
+		# Update the Response Object.
+		$this->setHeaders($headers);
+
+		$view = $this->getResult();
+		$method_name = "to".strtoupper($this->getFormat());
+
+		if (!method_exists($view, $method_name)) {
+			throw new \BadMethodException(get_class($view)." does not have the method `::{$method_name}`");
+		}
+
+		echo $view->$method_name();
+	}
+
+	/**
 	 * Run the Controller action and return the result.
 	 * @return mixed Result from the controller.
 	 */
@@ -180,4 +245,5 @@ class Response extends \Core\Blueprint\Object implements
 		}
 		return $result;
 	}
+
 }
