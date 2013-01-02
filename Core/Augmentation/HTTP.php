@@ -10,7 +10,7 @@ trait HTTP
 	{
 		$request_uri = trim($_SERVER['REQUEST_URI'], '/');
 
-		if ($request_uri === self::$config['rbhp_injection_token']) {
+		if ($request_uri === Request::$config['rbhp_injection_token']) {
 			if (strtolower($_SERVER['REQUEST_METHOD']) !== 'post') {
 				throw new \Exception\BadRequest("RBHP Injections can only be accomplished with POST.");
 			}
@@ -22,8 +22,8 @@ trait HTTP
 		} else {
 			$path = empty($request_uri) ? null : "/{$request_uri}";
 			$payload = $_POST ?: json_decode(file_get_contents('php://input'), true);
-			$method = $_SERVER['REQUEST_METHOD'] ?: self::$config['default_method'];
-			$format = isset($_SERVER['HTTP_ACCEPT']) ? \Bitworking\Mimeparse::bestMatch(self::$config['available_formats'], $_SERVER['HTTP_ACCEPT']) : null;
+			$method = $_SERVER['REQUEST_METHOD'] ?: Request::$config['default_method'];
+			$format = isset($_SERVER['HTTP_ACCEPT']) ? \Bitworking\Mimeparse::bestMatch(Request::$config['available_formats'], $_SERVER['HTTP_ACCEPT']) : null;
 		}
 
 		return [
@@ -41,7 +41,7 @@ trait HTTP
 		$host = str_replace('http://', '', $host);
 		$host = rtrim($host, '/');
 		$host = "http://{$host}";
-		$url = "{$host}/".self::$config['rbhp_injection_token'];
+		$url = "{$host}/".Request::$config['rbhp_injection_token'];
 		$data = serialize($request);
 		$headers = [
 				'Content-type' => 'text/x-rbhprequest'
