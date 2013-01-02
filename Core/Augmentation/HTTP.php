@@ -1,11 +1,23 @@
 <?php
+/**
+ * @version 0.1.0
+ */
 
 namespace Core\Augmentation;
 
 use Core\Prototype\Request;
 
+/**
+ * Provide a set of strategies of HTTP interaction. These should be specific and highly abstracted.
+ * Lower-abstraction requests can be made by using the `\Requests` class. (Which this Augmentation also makes use of.)
+ */
 trait HTTP
 {
+	/**
+	 * Obtain components of the request that face this instance of RBHP. Takes into account injection,
+	 * in which case it uses request components obtained from the injected `\Core\Prototype\Request` Object.
+	 * @return array An array of current request components.
+	 */
 	protected function getRequest()
 	{
 		$request_uri = trim($_SERVER['REQUEST_URI'], '/');
@@ -35,6 +47,11 @@ trait HTTP
 		];
 	}
 
+	/**
+	 * Inject the given request object into another server, and obtain its response.
+	 * @param  Request $request The Request object that is to be injected.
+	 * @return mixed           The response from the server, any serialized object will be unserialized.
+	 */
 	protected function injectRoute(Request $request)
 	{
 		$host = $request->getHost();

@@ -7,6 +7,7 @@ namespace Core\Prototype;
 
 /**
  * The Request object is responsible for taking a variety of paths and breaking them down.
+ * It then provides the ability to divert the request to another RBHP server.
  */
 class Request extends \Core\Blueprint\Object implements
 	\Core\Wireframe\Prototype\Request
