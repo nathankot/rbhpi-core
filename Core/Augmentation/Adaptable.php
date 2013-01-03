@@ -37,8 +37,16 @@ trait Adaptable
 	 * @param  callable $handle The handler.
 	 * @return void
 	 */
-	public static function adapt($method, callable $handle)
+	public static function adapt($method, $handle)
 	{
+		if (!is_callable($handle)) {
+			$file = trim($handle, '\\');
+			$file = ROOT . '/Vendor/' . str_replace(['\\', '\\\\'], '/', $file) . '.php';
+			if (!is_readable($file)) {
+				throw new \Exception\AdapterNotFound("Could not resolve `$handle` into an adapter!");
+			}
+			$handle = include($file);
+		}
 		self::$adapters[$method] = $handle;
 	}
 
