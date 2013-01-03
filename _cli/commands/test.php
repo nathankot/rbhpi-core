@@ -20,7 +20,7 @@ if ($class_name === 'core') {
 
 try {
 	test($class_name);
-} catch (\RuntimeException $e) {
+} catch (\Exception $e) {
 	error($e->getMessage());
 }
 
