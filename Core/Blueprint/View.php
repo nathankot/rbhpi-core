@@ -96,6 +96,9 @@ abstract class View extends \Core\Blueprint\Object implements
 	 */
 	final public function getData()
 	{
+		if ($this->data instanceof \Iterator) {
+			return iterator_to_array($this->data);
+		}
 		return $this->data;
 	}
 
