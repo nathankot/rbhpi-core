@@ -43,7 +43,7 @@ trait Adaptable
 			$file = trim($handle, '\\');
 			$file = ROOT . '/Vendor/' . str_replace(['\\', '\\\\'], '/', $file) . '.php';
 			if (!is_readable($file)) {
-				throw new \Exception\AdapterNotFound("Could not resolve `$handle` into an adapter!");
+				throw new \Exception\BadAdapter("Could not resolve `$handle` into an adapter!");
 			}
 			$handle = include($file);
 		}
