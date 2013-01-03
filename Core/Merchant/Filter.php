@@ -23,12 +23,6 @@ abstract class Filter extends \Core\Blueprint\Object implements
 									return filter_var($value, FILTER_VALIDATE_EMAIL);
 								}
 						]
-					,	'integer' => [
-								'regexp' => '[0-9]*'
-							,	'handle' => function($value) {
-									return is_int($value);
-								}
-						]
 					,	'url' => [
 								'regexp' => '^(?:(?:http|https)://)?(?:[A-z0-9_-]*?\.){1,}[A-z]{2,7}/?(?:[A-z0-9_-]*/?)*(?:[A-z0-9_-]*\.[A-z]{1,10})?$'
 							,	'handle' => function($value) {
@@ -44,10 +38,52 @@ abstract class Filter extends \Core\Blueprint\Object implements
 									return  $digit_count >= 3 && ($digit_count / strlen($value)) > 0.5;
 								}
 						]
+					,	'name' => [
+								'regexp' => '[\w\s]{0,85}'
+							,	'handle' => function($value) {
+									return is_string($value) && strlen($value) < 86;
+								}
+						]
+					,	'number' => [
+								'regexp' => '[0-9\-\.\,\s]*'
+							,	'handle' => function($value) {
+									return (boolean)preg_match("@^".self::getRegexp('number')."$@", $value);
+								}
+						]
 					,	'required' => [
 								'regexp' => '.{1,}'
 							,	'handle' => function($value) {
 									return isset($value) && $value !== '';
+								}
+						]
+					,	'integer' => [
+								'regexp' => '[0-9]*'
+							,	'handle' => function($value) {
+									return is_int($value);
+								}
+						]
+					,	'string' => [
+								'regexp' => '.*'
+							,	'handle' => function($value) {
+									return is_string($value);
+								}
+						]
+					,	'array' => [
+								'regexp' => '(?:[.*]|{.*})'
+							,	'handle' => function($value) {
+									return is_array($value);
+								}
+						]
+					,	'float' => [
+								'regexp' => '[0-9\.\,]*'
+							,	'handle' => function($value) {
+									return is_float($value);
+								}
+						]
+					,	'boolean' => [
+								'regexp' => '(?:0|1|false|true|FALSE|TRUE)'
+							,	'handle' => function($value) {
+									return is_bool($value);
 								}
 						]
 				]
