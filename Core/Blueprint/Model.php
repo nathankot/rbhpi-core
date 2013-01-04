@@ -118,6 +118,16 @@ class Model extends \Core\Blueprint\Object implements
 		return $this->useAdapter(__FUNCTION__, func_get_args());
 	}
 
+	public function remove($query, $options = [])
+	{
+		return $this->useAdapter(__FUNCTION__, func_get_args());
+	}
+
+	public function removeOne($entry, $options = [])
+	{
+		return $this->useAdapter(__FUNCTION__, func_get_args());
+	}
+
 	public function skip($int)
 	{
 		$this->data = $this->useAdapter(__FUNCTION__, func_get_args());
@@ -134,7 +144,7 @@ class Model extends \Core\Blueprint\Object implements
 		return extend($default, $entry);
 	}
 
-	public function save($entry, $options = [])
+	public function save($entry = [], $options = [])
 	{
 		$errors = $this->checkEntryAgainstSchema($entry, $this->schema);
 		if (is_array($errors)) {

@@ -6,20 +6,22 @@
 
 return function($self, $args) {
 	try {
-		$settings = $args[0];
+		$settings = array_filter($args[0]);
 		$server = $settings['server'];
+		$database = $settings['database'];
 		unset($settings['server']);
+		unset($settings['database']);
 
 		# Try to use the newer \MongoClient class.
 		if (class_exists('\MongoClient', false)) {
-			$connection = new \MongoClient();
+			$connection = new \MongoClient($server, $settings);
 		} elseif (class_exists('\Mongo', false)) {
 			$connection = new \Mongo($server, $settings);
 		} else {
 			throw new \Exception\MissingDependency("The PECL extension 'Mongo' required for MongoDB is missing!");
 		}
 
-		$connection = $connection->{$settings['database']};
+		$connection = $connection->{$database};
 
 		\Core\Blueprint\Model::config([
 				'established_connection' => $connection

@@ -10,14 +10,16 @@
 \Core\Blueprint\Model::adapt('findOne', 'Core\Adapter\MongoDB\FindOne');
 \Core\Blueprint\Model::adapt('connect', 'Core\Adapter\MongoDB\Connect');
 \Core\Blueprint\Model::adapt('save', 'Core\Adapter\MongoDB\Save');
+\Core\Blueprint\Model::adapt('remove', 'Core\Adapter\MongoDB\Remove');
+\Core\Blueprint\Model::adapt('removeOne', 'Core\Adapter\MongoDB\RemoveOne');
 
 # Default MongoDB Connection Setting
 \Core\Blueprint\Model::config([
 		'connection_settings' => [
 				'server' => 'mongodb://localhost:27017'
+			,	'database' => 'rbhpi'
 			,	'connect' => true
 			,	'timeout' => 2500
-			,	'database' => 'rbhpi'
 			,	'username' => null
 			,	'password' => null
 			,	'replicaSet' => null

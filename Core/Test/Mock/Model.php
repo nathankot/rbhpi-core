@@ -11,6 +11,4 @@ class Model extends \Core\Blueprint\Model
 		,	'number' => 'string:number'
 		,	'default' => 'string:number?:12345'
 	];
-
-
 }

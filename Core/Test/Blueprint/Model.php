@@ -9,6 +9,9 @@ class Model extends \Core\Test\Base
 		$this->message('Creating Mock model');
 		$model = new \Core\Test\Mock\Model();
 
+		$this->message('Cleaning up database');
+		$model->remove([]);
+
 		$this->message('Creating Mock model entries');
 		$entry = $model->create([
 				'name' => 'nathan'
