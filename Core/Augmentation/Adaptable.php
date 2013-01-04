@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 0.1.0
+ * @version 0.2.0
  */
 
 namespace Core\Augmentation;
@@ -48,6 +48,25 @@ trait Adaptable
 			$handle = include($file);
 		}
 		self::$adapters[$method] = $handle;
+	}
+
+	/**
+	 * Takes a folder of adapters, and creates an adapter for each filename in that folder as a method.
+	 * @param  string $set_name Namespace to the set
+	 * @return void
+	 */
+	public static function adaptSet($set_name)
+	{
+		$folder = trim($set_name, '\\');
+		$folder = ROOT . '/Vendor/' . str_replace(['\\', '\\\\'], '/', $folder);
+		if (!is_dir($folder)) {
+			throw new \Exception\BadAdapter("The adapter namespace `{$set_name}` could not be found!");
+		}
+		foreach (glob($folder.'/*.php') as $file) {
+			$method_name = lcfirst(basename($file, '.php'));
+			$handle = include($file);
+			static::adapt($method_name, $handle);
+		}
 	}
 
 	/**

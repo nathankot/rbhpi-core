@@ -33,5 +33,10 @@ class Adaptable extends \Core\Test\Base
 
 		$result = $adaptable->arb();
 		assert($result === 'test');
+
+		$this->message('Testing the use of a folder-set of adapters.');
+		AdaptableMock::adaptSet('Core\Test\Mock\Adapter');
+		assert($adaptable->one() === 'one');
+		assert($adaptable->two() === 'two');
 	}
 }

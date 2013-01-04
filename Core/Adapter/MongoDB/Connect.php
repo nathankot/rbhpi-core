@@ -1,7 +1,7 @@
 <?php
 /**
  * Create a MongoDB connection and store it.
- * @version 0.1.1
+ * @version 0.1.2
  */
 
 return function($self, $args) {
