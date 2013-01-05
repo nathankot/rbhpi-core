@@ -1,5 +1,7 @@
 <?php
 
+$exit_code = 0;
+
 message(Color::white('Test', 'blue'));
 line();
 
@@ -18,19 +20,22 @@ if ($class_name === 'core') {
 	return;
 }
 
-try {
-	test($class_name);
-} catch (\Exception $e) {
-	error($e->getMessage());
-}
+test($class_name);
 
 function test($class_name) {
-	if (class_exists($class_name)) {
-		message(Color::yellow("Testing {$class_name}"));
-		new $class_name();
-		message(Color::green('Testing complete.'));
-		line();
-	} else {
-		error("Class {$class_name} does not exist!");
+	try {
+		if (class_exists($class_name)) {
+			message(Color::yellow("Testing {$class_name}"));
+			new $class_name();
+			message(Color::green('Testing complete.'));
+			line();
+		} else {
+			error("Class {$class_name} does not exist!");
+		}
+	} catch (\Exception $e) {
+		error($e->getMessage());
+		$exit_code = 1;
 	}
 }
+
+exit($exit_code);
