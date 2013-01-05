@@ -98,6 +98,15 @@ class Request extends \Core\Blueprint\Object implements
 	}
 
 	/**
+	 * For idiomatic proxy for injectTo without an argument.
+	 * @return mixed Response from the server.
+	 */
+	public function inject()
+	{
+		return $this->injectTo(null);
+	}
+
+	/**
 	 * Break the path down into an array of components, and the format.
 	 * @return void
 	 */
