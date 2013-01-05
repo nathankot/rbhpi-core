@@ -1,0 +1,24 @@
+{
+    "name": "rbhpi/core",
+    "type": "library",
+    "description": "RBHPi Framework Core",
+    "keywords": ["RBHPi","framework","PHP"],
+    "homepage": "https://github.com/nathankot/rbhpi-core",
+    "license": "Apache License 2.0",
+    "authors": [
+        {
+            "name": "Nathan Kot",
+            "email": "nk@nathankot.com",
+            "homepage": "http://nathankot.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-0": {
+            "Core": "Core/"
+        }
+    }
+}
