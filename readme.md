@@ -1,6 +1,6 @@
 # The RBHPi Framework Core.
 
-This is the RBHPi Core. Check out the [RBHPi Framework](https://github.com/nathankot/rbhpi)
+This is the RBHPi Core. Check out the [RBHPi Framework](https://github.com/nathankot/rbhpi).
 
 # License
 
