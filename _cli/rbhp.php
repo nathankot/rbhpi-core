@@ -34,9 +34,9 @@ loaded on init.
 PS. commands should be self-executing.
 ====================================== */
 
-require_once dirname(dirname(__DIR__)) . '/Bootstrap/run.php';
+require_once dirname(__DIR__) . '/Bootstrap/run.php';
 
-define('CLI_ROOT', dirname(dirname(__DIR__)).'/_cli');
+define('CLI_ROOT', dirname(dirname(dirname(dirname(__DIR__)))).'/_cli');
 define('CORE_CLI_ROOT', __DIR__);
 define('BIN_DIR', CLI_ROOT.'/bin');
 define('DS', DIRECTORY_SEPARATOR);
