@@ -37,7 +37,7 @@ class Response extends \Core\Test\Base
 		assert($result === 200);
 
 		$this->message('Testing Response serving.');
-		$response->getResult()->setTemplate(ROOT.'/Core/Core/Test/Mock/MustacheTemplate.mustache');
+		$response->getResult()->setTemplate(CORE_SRC.'/Core/Test/Mock/MustacheTemplate.mustache');
 		$response->getResult()->setLayout(null);
 
 		$this->message('Testing headers are correct in the response');

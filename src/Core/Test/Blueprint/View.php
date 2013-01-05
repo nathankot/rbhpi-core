@@ -16,7 +16,7 @@ class View extends \Core\Test\Base
 		];
 
 		$view = new ViewMock($data);
-		$view->setTemplate(ROOT.'/Core/Core/Test/Mock/MustacheTemplate.mustache');
+		$view->setTemplate(CORE_SRC.'/Core/Test/Mock/MustacheTemplate.mustache');
 		$view->setLayout(null);
 
 		$this->message('Testing HTML rendering with a Mustache Template, and without a layout.');
@@ -32,7 +32,7 @@ class View extends \Core\Test\Base
 
 		$this->message('Testing HTML rendering with a Mustache Template & Layout');
 
-		$view->setLayout(ROOT.'/Core/Core/Test/Mock/MustacheLayout.mustache');
+		$view->setLayout(CORE_SRC.'/Core/Test/Mock/MustacheLayout.mustache');
 		$result = $view->toHTML();
 		assert(strpos($result, 'layout') !== false);
 

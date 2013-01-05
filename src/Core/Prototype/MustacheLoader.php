@@ -38,7 +38,7 @@ class MustacheLoader implements \Mustache_Loader
 			,	$this->base_dir.$template_name
 			,	$this->base_dir.$template_name.'.mustache'
 			, $this->base_dir.$template_name.'.php'
-			,	ROOT.'/Core/Core/Test/Mock/'.$template_name.'.mustache' # Used for Tests
+			,	CORE_SRC.'/Core/Test/Mock/'.$template_name.'.mustache' # Used for Tests
 		];
 
 		$template_files = array_filter($template_files, function($value) {

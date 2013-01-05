@@ -41,7 +41,7 @@ trait Adaptable
 	{
 		if (!is_callable($handle)) {
 			$file = trim($handle, '\\');
-			$file = ROOT . '/Vendor/' . str_replace(['\\', '\\\\'], '/', $file) . '.php';
+			$file = CORE_SRC . '/' . str_replace(['\\', '\\\\'], '/', $file) . '.php';
 			if (!is_readable($file)) {
 				throw new \Exception\BadAdapter("Could not resolve `$handle` into an adapter!");
 			}
@@ -58,7 +58,7 @@ trait Adaptable
 	public static function adaptSet($set_name)
 	{
 		$folder = trim($set_name, '\\');
-		$folder = ROOT . '/Vendor/' . str_replace(['\\', '\\\\'], '/', $folder);
+		$folder = CORE_SRC . '/' . str_replace(['\\', '\\\\'], '/', $folder);
 		if (!is_dir($folder)) {
 			throw new \Exception\BadAdapter("The adapter namespace `{$set_name}` could not be found!");
 		}

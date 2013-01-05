@@ -7,8 +7,8 @@ $class_name = str_replace(array('_', '/'), '\\', $argv[2]);
 
 if ($class_name === 'core') {
 	$non_tested = ['mock'];
-	foreach (glob(ROOT.'/core/Core/Test/*/*.php') as $file) {
-		preg_match('@\/Vendor\/rbhpi\/core\/Core\/Test\/(.*)\/(.*)\.php@', $file, $file_parts);
+	foreach (glob(CORE_SRC.'/Core/Test/*/*.php') as $file) {
+		preg_match('@'.preg_quote(CORE_SRC).'\/Core\/Test\/(.*)\/(.*)\.php@', $file, $file_parts);
 		$class_name = "\\Core\\Test\\{$file_parts[1]}\\{$file_parts[2]}";
 		if (in_array(strtolower($file_parts[1]), $non_tested)) {
 			continue;
