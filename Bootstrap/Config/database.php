@@ -1,7 +1,7 @@
 <?php
 /**
  * Sets up the Database adapters to the default (MongoDB)
- * @version 0.1.0
+ * @version 0.2.0
  */
 
 \Core\Blueprint\Model::adaptSet('Core\Adapter\MongoDB');
