@@ -13,6 +13,7 @@ class FlashMessaging extends \Core\Test\Base
 		Subject::addMessage('Second message one.', 'one');
 		Subject::addMessage('Message two.', 'two', 2);
 		Subject::addMessage('Message three.', 'three');
+		Subject::refresh();
 
 		$this->message('Testing retrieval of messages.');
 		$message = Subject::getMessage('one');

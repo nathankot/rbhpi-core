@@ -1,6 +1,6 @@
 <?php
 /**
- * @version 0.1.0
+ * @version 0.2.0
  */
 
 namespace Core\Merchant;
@@ -31,6 +31,9 @@ class FlashMessaging extends \Core\Blueprint\Object implements
 	{
 		$_SESSION[self::RBHPI_FLASH_MESSAGE_KEY] = $_SESSION[self::RBHPI_FLASH_MESSAGE_KEY] ?: [];
 		self::$data =& $_SESSION[self::RBHPI_FLASH_MESSAGE_KEY];
+		if (!is_array(self::$data)) {
+			self::$data = [];
+		}
 	}
 
 	/**
@@ -40,10 +43,21 @@ class FlashMessaging extends \Core\Blueprint\Object implements
 	public static function refresh()
 	{
 		self::config();
+
+		foreach(self::$data as $key => $value) {
+			if (empty($value)) {
+				unset(self::$data[$key]);
+			}
+		}
+
+		if (empty(self::$data)) {
+			return;
+		}
+
 		self::$data = array_map(function($value) {
 			foreach ($value as $key => &$message) {
 				$message['persistence'] -= 1;
-				if ($message['persistence'] <= 0) {
+				if ($message['persistence'] < 0) {
 					unset($value[$key]);
 				}
 			}
@@ -61,9 +75,6 @@ class FlashMessaging extends \Core\Blueprint\Object implements
 	{
 		self::config();
 		# Sanity Checks
-		if (!is_string($message)) {
-			throw new \InvalidArgumentException("Flash message must be a string!");
-		}
 		if (!is_string($key)) {
 			throw new \InvalidArgumentException("Flash message key must be a string!");
 		}
@@ -76,9 +87,35 @@ class FlashMessaging extends \Core\Blueprint\Object implements
 		}
 
 		self::$data[$key][] =	[
-				'message' => (string)$message
+				'message' => $message
 			,	'persistence' => (integer)$persistence
 		];
+	}
+
+	public static function addMessages($messages, $key = 'rbhpi', $persistence = 1)
+	{
+		self::config();
+		# Sanity Checks
+		if (!is_array($messages)) {
+			throw new \InvalidArgumentException("Flash messages must be an array!");
+		}
+		if (!is_string($key)) {
+			throw new \InvalidArgumentException("Flash message key must be a string!");
+		}
+		if (!is_integer($persistence)) {
+			throw new InvalidArgumentException("Flash message persistence must be an integer!");
+		}
+
+		$compliant_messages = [];
+		foreach ($messages as $message) {
+			$compliant_messages[] = [
+					'message' => $message
+				,	'persistence' => (integer)$persistence
+			];
+		}
+
+		self::$data[$key] = self::$data[$key] ?: [];
+		self::$data[$key] += $compliant_messages;
 	}
 
 	/**
@@ -89,11 +126,16 @@ class FlashMessaging extends \Core\Blueprint\Object implements
 	public static function getMessage($key = 'rbhpi')
 	{
 		self::config();
-		reset(self::$data[$key]);
 
 		if (!is_string($key)) {
 			throw new \InvalidArgumentException("Flash message key must be a string!");
 		}
+
+		if (!is_array(self::$data[$key])) {
+			return null;
+		}
+
+		reset(self::$data[$key]);
 
 		if (!isset(current(self::$data[$key])['message'])) {
 			return null;
@@ -112,6 +154,10 @@ class FlashMessaging extends \Core\Blueprint\Object implements
 		self::config();
 		if (!is_string($key)) {
 			throw new \InvalidArgumentException("Flash message key must be a string!");
+		}
+
+		if (!isset(self::$data[$key])) {
+			return [];
 		}
 
 		$result = array_map(function($value) {
