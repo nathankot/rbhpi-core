@@ -65,7 +65,11 @@ class Model extends \Core\Blueprint\Object implements
 	 */
 	final public function init($query = [])
 	{
-		$model_class = __CLASS__;
+		$model_class = get_called_class();
+		if (!$this->name) {
+			$model_class_components = explode("\\", $model_class);
+			$this->name = end($model_class_components);
+		}
 		# Sanity check.
 		if (!$this->name) {
 			throw new \Exception\BadModel("The model {$model_class} does not have a name!");
