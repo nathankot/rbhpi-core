@@ -65,20 +65,23 @@ class Route extends \Core\Blueprint\Object implements
 	{
 		# Set the default handle if it doesn't exist
 		self::$config['default_handle'] = self::$config['default_handle'] ?: function($captured, $request) {
-			# UNTESTED YET, SUBJECT TO CHANGE
 			$controller_class = "\\App\\Controller\\{$captured['controller']}";
-			$prefixes = [strtolower($request->getMethod()).'_', ''];
+			$prefixes = [strtolower($request->getMethod()).'_', '', 'dummy_'];
 			$prefixes_backup = $prefixes;
 			$checked_index = false;
+
 			do {
 				$method = array_shift($prefixes) . $captured['method'];
-				if (empty($prefixes) && !$checked_index) {
-					array_unshift($captured['args'], $captured['method']);
-					$captured['method'] = self::$config['default_method'];
-					$prefixes = $prefixes_backup;
-					$checked_index = true;
-				}
 			} while (!method_exists($controller_class, $method) && !empty($prefixes));
+
+			if (empty($prefixes) && !$checked_index) {
+				array_unshift($captured['args'], $captured['method']);
+				$captured['method'] = self::$config['default_method'];
+				$prefixes = $prefixes_backup;
+				$checked_index = true;
+			}
+
+			$captured['method'] = $method;
 			return [
 					'controller' => isset($captured['controller']) ? $captured['controller'] : null
 				,	'method' => isset($captured['method']) ? $captured['method'] : null
