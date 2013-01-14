@@ -1,6 +1,7 @@
 <?php
 /**
  * Defines some custom functions here.
+ * @version 0.2.0
  */
 
 /**
@@ -21,4 +22,20 @@ function extend($a, $b) {
 				}
 		}
 		return $a;
+}
+
+/**
+ * Flattens an array.
+ * @param  Array $array
+ * @return Array
+ */
+function array_flatten($array) {
+	if (!is_array($array)) {
+    return array($array);
+	}
+	$result = array();
+	foreach ($array as $value) {
+    $result = array_merge($result, array_flatten($value));
+	}
+	return $result;
 }
