@@ -9,8 +9,8 @@ return function($self, $args) {
 
 	$mustache = new \Mustache_Engine([
 			'cache' => ROOT.'/_tmp'
-		,	'loader' => new \Core\Prototype\MustacheLoader(ROOT.'/App/Template/')
-		,	'partials_loader' => new \Core\Prototype\MustacheLoader(ROOT.'/App/Template/Partial/')
+		,	'loader' => new \Core\Prototype\MustacheLoader(ROOT.'/App/Template')
+		,	'partials_loader' => new \Core\Prototype\MustacheLoader(ROOT.'/App/Template/Partial')
 		,	'escape' => \Core\Blueprint\View::getConfig()['mustache_escape']
 		,	'helpers' => \Core\Blueprint\View::getConfig()['mustache_helpers']
 	]);
@@ -22,7 +22,7 @@ return function($self, $args) {
 		$layout_mustache = new \Mustache_Engine([
 				'cache' => ROOT.'/_tmp'
 			,	'loader' => new \Core\Prototype\MustacheLoader(ROOT.'/App/Template/Layout')
-			,	'partials_loader' => new \Core\Prototype\MustacheLoader(ROOT.'/App/Template/Partial/')
+			,	'partials_loader' => new \Core\Prototype\MustacheLoader(ROOT.'/App/Template/Partial')
 			,	'escape' => \Core\Blueprint\View::getConfig()['mustache_escape']
 			,	'helpers' => \Core\Blueprint\View::getConfig()['mustache_helpers']
 		]);

@@ -23,7 +23,7 @@ class MustacheLoader implements \Mustache_Loader
 	 */
 	public function __construct($base_dir = null)
 	{
-		$this->base_dir = ltrim($base_dir,'/').'/';
+		$this->base_dir = '/'.trim($base_dir,'/').'/';
 	}
 
 	/**
