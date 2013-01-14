@@ -132,6 +132,7 @@ class Route extends \Core\Blueprint\Object implements
 				continue;
 			}
 			array_shift($captured);
+			$captured = array_filter($captured);
 			preg_match_all(self::MATCH_NAMES, $route['route'], $names, PREG_SET_ORDER);
 			$names = array_map(function($value) {
 				return $value[1];
@@ -145,9 +146,6 @@ class Route extends \Core\Blueprint\Object implements
 				}
 			}
 			break;
-		}
-		if (empty($captured)) {
-			throw new \Exception\BadRequest("Could not find a matching route for `{$path}`");
 		}
 		$result = $route['handle']($captured, $this->request);
 		$this->controller = $result['controller'];

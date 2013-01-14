@@ -13,6 +13,7 @@ if (php_sapi_name() !== 'cli') {
 		$response->serve();
 	} catch (Exception $e) {
 		# @todo : Do something with the caught exception.
+		var_dump($e);
 	}
 }
 

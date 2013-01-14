@@ -35,7 +35,16 @@ trait HTTP
 			$path = empty($request_uri) ? null : "/{$request_uri}";
 			$payload = $_POST ?: json_decode(file_get_contents('php://input'), true);
 			$method = $_SERVER['REQUEST_METHOD'] ?: Request::$config['default_method'];
-			$format = isset($_SERVER['HTTP_ACCEPT']) ? \Bitworking\Mimeparse::bestMatch(Request::$config['available_formats'], $_SERVER['HTTP_ACCEPT']) : null;
+			$available_mime_types = array_reduce(Request::$config['available_formats'], function($result, $mimes) {
+				$result = $result + $mimes;
+				return $result;
+			}, []);
+			$format = isset($_SERVER['HTTP_ACCEPT']) ? \Bitworking\Mimeparse::bestMatch($available_mime_types, $_SERVER['HTTP_ACCEPT']) : null;
+			array_walk_recursive(Request::$config['available_formats'], function($mime, $ext) use (&$format) {
+				if (strtolower($mime) === strtolower($format)) {
+					$format = $ext;
+				}
+			});
 		}
 
 		return [

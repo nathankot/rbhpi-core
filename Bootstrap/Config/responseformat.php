@@ -6,7 +6,10 @@
 
 # Accepted response formats, and defaults
 \Core\Prototype\Request::config([
-		'available_formats' => array('html', 'json')
+		'available_formats' => [
+				'html' => ['text/html']
+			,	'json' => ['application/json', 'application/x-javascript', 'text/javascript']
+		]
 	,	'default_format' => 'html'
 	,	'default_method' => 'GET'
 ]);

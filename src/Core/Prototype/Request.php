@@ -118,7 +118,7 @@ class Request extends \Core\Blueprint\Object implements
 		$last = explode('.', $last);
 		$format = end($last);
 
-		if (!empty($format) && in_array($format, self::$config['available_formats'])) {
+		if (!empty($format) && array_key_exists($format, self::$config['available_formats'])) {
 			$this->format = $format;
 			array_pop($last);
 		}

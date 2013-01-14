@@ -18,7 +18,7 @@ class Request extends \Core\Test\Base
 	public function decipherURI()
 	{
 
-		Subject::config(['available_formats' => ['format']]);
+		Subject::config(['available_formats' => ['format' => []]]);
 		$_SERVER['REQUEST_METHOD'] = 'PUT';
 
 		////
