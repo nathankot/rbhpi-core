@@ -107,6 +107,15 @@ class Request extends \Core\Blueprint\Object implements
 	}
 
 	/**
+	 * Redirect to this request.
+	 * @return void
+	 */
+	public function redirect()
+	{
+		return $this->redirectTo($this);
+	}
+
+	/**
 	 * Break the path down into an array of components, and the format.
 	 * @return void
 	 */

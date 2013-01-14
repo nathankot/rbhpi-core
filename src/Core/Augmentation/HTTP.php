@@ -79,4 +79,15 @@ trait HTTP
 		}
 		return $data;
 	}
+
+	/**
+	 * Redirect to another request.
+	 * @param  Request $request Request Object.
+	 * @return void
+	 */
+	protected function redirectTo(Request $request)
+	{
+		header("Location: {$request->getPath()}");
+		exit();
+	}
 }
