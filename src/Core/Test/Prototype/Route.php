@@ -10,6 +10,30 @@ class Route extends \Core\Test\Base
 
 	public function testParse()
 	{
+		Subject::connect('/', function() {
+			return [
+					'controller' => 'root'
+				,	'method' => 'success'
+				,	'args' => ['three']
+			];
+		});
+
+		Subject::connect('this/is/a/test', function($captured) {
+			return [
+					'controller' => 'test'
+				,	'method' => 'success'
+				,	'args' => ['three']
+			];
+		});
+
+		Subject::connect('opt/{optional}?/three', function($captured) {
+			return [
+					'controller' => 'one'
+				,	'method' => $captured['optional']
+				,	'args' => ['three']
+			];
+		});
+
 		Subject::connect('{controller}/{method:@[A-e]*@}/{*args:integer}', function($captured) {
 			return [
 					'controller' => $captured['controller']
@@ -35,6 +59,16 @@ class Route extends \Core\Test\Base
 		});
 
 		////
+		$this->message('Testing Super Basic Route');
+
+		$request= new RequestPrototype(['path' => 'this/is/a/test.json']);
+		$route = new Subject($request);
+
+		assert($route->getController() === 'test');
+		assert($route->getMethod() === 'success');
+
+
+		////
 		$this->message('Testing Route parser: Basic Route');
 
 		$request= new RequestPrototype(['path' => 'One/Two/Three.json']);
@@ -44,6 +78,15 @@ class Route extends \Core\Test\Base
 		assert($route->getMethod() === 'Two');
 		assert($route->getArgs() === ['Three']);
 		assert($route->getFormat() === 'json');
+
+		////
+		$this->message('Testing Root Route detection');
+		$request= new RequestPrototype(['path' => '']);
+		$route = new Subject($request);
+		assert($route->getController() === 'root');
+		$request= new RequestPrototype(['path' => '/']);
+		$route = new Subject($request);
+		assert($route->getController() === 'root');
 
 		////
 		$this->message('Testing Route parser: Regex filter, and Splat Integer Filter');
@@ -66,6 +109,31 @@ class Route extends \Core\Test\Base
 		assert($route->getMethod() === 'one');
 		assert($route->getArgs() === ['nk@nathankot.com']);
 		assert($route->getFormat() === 'html');
+
+		////
+		$this->message('Testing nil splat');
+
+		$request = new RequestPrototype(['path' => 'controller/abCde']);
+		$route = new Subject($request);
+
+		assert($route->getController() === 'controller');
+		assert($route->getMethod() === 'abCde');
+		assert($route->getArgs() === []);
+
+		////
+		$this->message('Testing optional Route component');
+
+		$request = new RequestPrototype(['path' => 'opt/two/three']);
+		$route = new Subject($request);
+
+		assert($route->getController() === 'one');
+		assert($route->getMethod() === 'two');
+
+		$request = new RequestPrototype(['path' => 'opt/three']);
+		$route = new Subject($request);
+
+		$result = $route->getMethod();
+		assert(empty($result));
 
 	}
 

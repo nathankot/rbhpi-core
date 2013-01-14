@@ -115,8 +115,6 @@ class Route extends \Core\Blueprint\Object implements
 		$this->breakItDown();
 	}
 
-	const MATCH_NAMES = '@{([\*\w]*):?.*?}@';
-
 	/**
 	 * Find the best controller, method, and args using the given request path, and pre-configured routes.
 	 * @return void
@@ -127,21 +125,21 @@ class Route extends \Core\Blueprint\Object implements
 		$path = $this->request->getPath();
 		foreach (self::$config['routes'] as $route) {
 			$captured = [];
-			$names = [];
 			if (preg_match($route['match'], $path, $captured) !== 1) {
 				continue;
 			}
-			array_shift($captured);
-			$captured = array_filter($captured);
-			preg_match_all(self::MATCH_NAMES, $route['route'], $names, PREG_SET_ORDER);
-			$names = array_map(function($value) {
-				return $value[1];
-			}, $names);
-			$captured = array_combine($names, $captured);
+			foreach ($captured as $k => $v) {
+				if (is_integer($k)) {
+					unset($captured[$k]);
+				}
+			}
 			foreach ($captured as $name => $component) {
-				if (strpos($name, '*') === 0) {
+				# Splat marker '*' has been replaced by '_' to conform to
+				# regex Sub-pattern names.
+				if (strpos($name, '_') === 0) {
 					$new_name = substr($name, 1);
 					$captured[$new_name] = explode('/', $component);
+					$captured[$new_name] = array_filter($captured[$new_name]);
 					unset($captured[$name]);
 				}
 			}
@@ -154,9 +152,13 @@ class Route extends \Core\Blueprint\Object implements
 	}
 
 	const MATCH_WRAPPER = '@^/?%s(?:\.[a-z]*)?$@';
-	const MATCH_COMPONENT = '(%s)/?';
-	const SPLAT_MATCH_COMPONENT = '((?:%s/?)*?)';
+	const MATCH_COMPONENT = '(?P<%s>%s)/?';
+	const MATCH_COMPONENT_OPTIONAL = '(?P<%s>%s)?/?';
+	const NON_MATCH_COMPONENT = '(?:%s)/?';
+	const NON_MATCH_COMPONENT_OPTIONAL = '(?:%s)?/?';
+	const SPLAT_MATCH_COMPONENT = '(?P<%s>(?:%s/?)*?)';
 	const DEFAULT_MATCH = '[\d\w\_\-\%]*';
+	const NAMED_CAPTURE = '?P<%s>';
 
 	/**
 	 * Create a regex match for a given route.
@@ -168,31 +170,51 @@ class Route extends \Core\Blueprint\Object implements
 		$match_components = '';
 		$components = explode('/', trim($route, '/'));
 		foreach ($components as $component) {
-			$component_parts = explode(':', trim($component, '{}'));
-			if (count($component_parts) === 2) {
-				$filter_class = self::$config['filter'];
-				$filters = explode('|', $component_parts[1]);
-				if (
-					count($filters) === 1 &&
-					trim($filters[0], '@') !== $filters[0]
-				) {
-					$component = trim($filters[0], '@');
+			$optional = false;
+			if (strpos($component, '?') === strlen($component) - 1) {
+				$component = rtrim($component, '?');
+				$optional = true;
+			}
+			# If this component is just a regular string
+			if (preg_match('@^{.*}$@', $component) !== 1) {
+				if ($optional) {
+					$component = sprintf(self::NON_MATCH_COMPONENT_OPTIONAL, preg_quote($component, '@'));
 				} else {
-					foreach ($filters as $filter) {
-						if (class_exists($filter_class) && $filter_class::checkExist($filter)) {
-							$component = $filter_class::getRegexp($filter);
-						} else {
-							$component = self::DEFAULT_MATCH;
-						}
-					}
+					$component = sprintf(self::NON_MATCH_COMPONENT, preg_quote($component, '@'));
 				}
 			} else {
-				$component = self::DEFAULT_MATCH;
-			}
-			if (strpos($component_parts[0], '*') === 0) {
-				$component = sprintf(self::SPLAT_MATCH_COMPONENT, $component);
-			} else {
-				$component = sprintf(self::MATCH_COMPONENT, $component);
+				$component_parts = explode(':', trim($component, '{}'));
+				$component_name = $component_parts[0];
+				if (count($component_parts) === 2) {
+					$filter_class = self::$config['filter'];
+					$filters = explode('|', $component_parts[1]);
+					if (
+						count($filters) === 1 &&
+						trim($filters[0], '@') !== $filters[0]
+					) {
+						$component = trim($filters[0], '@');
+					} else {
+						foreach ($filters as $filter) {
+							if (class_exists($filter_class) && $filter_class::checkExist($filter)) {
+								$component = $filter_class::getRegexp($filter);
+							} else {
+								$component = self::DEFAULT_MATCH;
+							}
+						}
+					}
+				} else {
+					$component = self::DEFAULT_MATCH;
+				}
+				if (strpos($component_name, '*') === 0) {
+					$component_name = '_' . substr($component_name, 1);
+					$component = sprintf(self::SPLAT_MATCH_COMPONENT, $component_name, $component);
+				} else {
+					if ($optional) {
+						$component = sprintf(self::MATCH_COMPONENT_OPTIONAL, $component_name, $component);
+					} else {
+						$component = sprintf(self::MATCH_COMPONENT, $component_name, $component);
+					}
+				}
 			}
 			$match_components .= $component;
 		}

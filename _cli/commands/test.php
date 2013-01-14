@@ -6,8 +6,15 @@ message(Color::white('Test', 'blue'));
 line();
 
 $class_name = str_replace(array('_', '/'), '\\', $argv[2]);
+$class_name = '\\' . trim($class_name, '\\');
 
-if ($class_name === 'core') {
+$_RBHPI['load_core_config']();
+
+if (strpos($class_name, '\\Core') !== 0) {
+	$_RBHPI['load_app_config']();
+}
+
+if ($class_name === '\\Core') {
 	$non_tested = ['mock'];
 	foreach (glob(CORE_SRC.'/Core/Test/*/*.php') as $file) {
 		preg_match('@'.preg_quote(CORE_SRC).'\/Core\/Test\/(.*)\/(.*)\.php@', $file, $file_parts);
