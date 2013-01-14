@@ -44,7 +44,7 @@ abstract class View extends \Core\Blueprint\Object implements
 	 * @param  array $data The data for the View object to use.
 	 * @return void
 	 */
-	final public function init($data, $template = null)
+	final public function init($data = [], $template = null)
 	{
 		self::config();
 		$this->data = $data;
