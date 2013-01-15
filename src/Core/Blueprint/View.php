@@ -28,6 +28,12 @@ abstract class View extends \Core\Blueprint\Object implements
 	public $data;
 
 	/**
+	 * Provides access to flash messaging.
+	 * @var \Core\Prototype\Flash
+	 */
+	public $flash;
+
+	/**
 	 * The template name to use.
 	 * @var string
 	 */
@@ -47,6 +53,7 @@ abstract class View extends \Core\Blueprint\Object implements
 	final public function init($data = [], $template = null)
 	{
 		self::config();
+		$this->flash = new \Core\Prototype\Flash();
 		$this->data = $data;
 		if ($template !== null) {
 			$this->template = $template;
