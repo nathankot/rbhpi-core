@@ -11,7 +11,7 @@ use \Core\Merchant\FlashMessaging;
  * Instances of this access should provide access to FlashMessaging via
  * overloaded properties.
  */
-class Flash
+class Flash implements \ArrayAccess
 {
 	public function __get($name)
 	{
@@ -27,4 +27,21 @@ class Flash
 
 		return FlashMessaging::getMessage($name);
 	}
+
+	public function __isset($name) {
+		return true;
+	}
+
+	public function offsetGet($name)
+	{
+		return $this->__get($name);
+	}
+
+	public function offsetExists($name)
+	{
+		return $this->__get("has_{$name}");
+	}
+
+	public function offsetSet($name, $v) {}
+	public function offsetUnset($name) {}
 }
